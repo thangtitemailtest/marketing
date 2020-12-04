@@ -23,7 +23,7 @@
                             </button>
                         </div>
                         <div class="col-xs-9 col-md-9" id="thongbao" style="display: none">
-                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p. Vui lòng đợi và không
+                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p - 20p. Vui lòng đợi và không
                                 tắt
                                 trang này.</code>
                         </div>
@@ -55,7 +55,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Cập nhật dữ liệu có thể mất 10p. Bạn có muốn cập nhật?
+                    Cập nhật dữ liệu có thể mất 10p - 20p. Bạn có muốn cập nhật?
                 </div>
                 <div class="modal-footer">
                     <form action="{{ route('get-capnhatdulieu') }}" method="GET" id="filter-frm">
@@ -75,13 +75,17 @@
         function clickCapnhat() {
             event.preventDefault();
 
-            $('#exampleModal').modal('hide');
-            $('#thongbao').show();
+            var conf = confirm('Bạn có muốn cập nhật không?');
+            if (conf) {
 
-            $('.btn').attr('disabled', 'disabled');
-            $('#divload').html("<div class='loader'></div>");
+                $('#exampleModal').modal('hide');
+                $('#thongbao').show();
 
-            $('#filter-frm').submit();
+                $('.btn').attr('disabled', 'disabled');
+                $('#divload').html("<div class='loader'></div>");
+
+                $('#filter-frm').submit();
+            }
         }
 
         function makeAlertright(msg, duration) {

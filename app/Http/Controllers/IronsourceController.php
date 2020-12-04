@@ -214,7 +214,7 @@ class IronsourceController extends Controller
 		$dem = 0;
 		foreach ($games as $item) {
 			$dem++;
-			if ($dem < 2) {
+			if ($dem == 3) {
 				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
 					$gameid = $item->gameid;
 
@@ -223,7 +223,7 @@ class IronsourceController extends Controller
 					echo "</pre>";
 
 					$appKey = $item->ironscource_appkey;
-					$ironsource = $this->getRevenueIronsource($appKey, $ngay_hom_truoc);
+					$ironsource = $this->getRevenueIronsource($appKey, $ngay_hom_truoc_kia);
 					$ironsource = json_decode($ironsource, true);
 
 					echo "<pre>";
@@ -257,7 +257,7 @@ class IronsourceController extends Controller
 						echo "</pre>";*/
 
 
-						foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
+						/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
 							if (isset($arr_adsnetworks[$adsnetwork])) {
 								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
 								echo "<pre>";
@@ -265,7 +265,7 @@ class IronsourceController extends Controller
 								echo "</pre>";
 
 							}
-						}
+						}*/
 
 
 						/*foreach ($arr_ironsource as $adsnetwork => $item_country) {

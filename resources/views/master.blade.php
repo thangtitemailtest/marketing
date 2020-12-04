@@ -103,30 +103,41 @@
         @endif
 
         <li class="nav-item">
-                <a class="nav-link" href="{{route('get-capnhatdulieu')}}">
-                    <i class="fas fa-folder"></i>
-                    <span>Cập nhật dữ liệu</span></a>
-            </li>
+            <a class="nav-link" href="{{route('get-capnhatdulieu')}}">
+                <i class="fas fa-folder"></i>
+                <span>Cập nhật dữ liệu</span></a>
+        </li>
 
-        {{--<li class="nav-item">
-            <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages13"
-               aria-expanded="true" aria-controls="collapsePages">
-                <i class="fab fa-first-order"></i>
-                <span>Reports</span>
-            </a>
-            <div id="collapsePages13" class="collapse" aria-labelledby="headingPages" data-parent="">
-                <div class="bg-white py-2 collapse-inner rounded">
+        <li class="nav-item">
+            <a class="nav-link" href="{{route('get-themdulieu')}}">
+                <i class="fas fa-plus"></i>
+                <span>Thêm dữ liệu</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="{{route('get-caidatnuoc')}}">
+                <i class="fas fa-globe"></i>
+                <span>Cài đặt nước</span></a>
+        </li>
 
-                    --}}{{--<a class="collapse-item" href="{{url('report')}}">Reports</a>--}}{{--
-                    @if(in_array('report/userconlaisaulevel',$permission) || $permission[0] == 'admin')
-                        <a class="collapse-item" href="{{route('get-userconlaisaulevel')}}">Lượng user còn lại sau<br>các
-                            level</a>
-                    @endif
-                </div>
+    {{--<li class="nav-item">
+        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages13"
+           aria-expanded="true" aria-controls="collapsePages">
+            <i class="fab fa-first-order"></i>
+            <span>Reports</span>
+        </a>
+        <div id="collapsePages13" class="collapse" aria-labelledby="headingPages" data-parent="">
+            <div class="bg-white py-2 collapse-inner rounded">
+
+                --}}{{--<a class="collapse-item" href="{{url('report')}}">Reports</a>--}}{{--
+                @if(in_array('report/userconlaisaulevel',$permission) || $permission[0] == 'admin')
+                    <a class="collapse-item" href="{{route('get-userconlaisaulevel')}}">Lượng user còn lại sau<br>các
+                        level</a>
+                @endif
             </div>
-        </li>--}}
+        </div>
+    </li>--}}
 
-        <!-- Divider -->
+    <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 
     </ul>

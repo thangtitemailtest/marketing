@@ -35,11 +35,21 @@ Route::middleware('Checklogin')->group(function () {
 
 	Route::get('/phanquyenuser/{id}', 'HomeController@getPhanquyenuser')->name('get-phanquyenuser');
 
+	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
+	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
+	Route::post('/themdulieu-post', 'MarketingController@postThemdulieu')->name('post-themdulieu');
+
 	/*Report*/
 	Route::group(['prefix' => 'report'], function () {
 		//Route::get('/', 'chartController@index')->name('get.report');
 	});
 	/*END Report*/
+});
+
+Route::middleware('Checklogout')->group(function () {
+	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
+	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
+	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
 });
 
 
@@ -50,10 +60,5 @@ Route::get('/adsword', 'AdswordController@getAdsword')->name('get-asdwords');
 Route::get('/ironsource', 'IronsourceController@getIronsource')->name('get-ironsource');
 //Route::get('/revenueironsource', 'IronsourceController@getRevenueIronsource');
 /*END Ads*/
-
-Route::get('/test', 'MarketingController@getTest');
-
-Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
-
 
 //Auth::routes();
