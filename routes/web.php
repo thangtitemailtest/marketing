@@ -50,6 +50,10 @@ Route::middleware('Checklogout')->group(function () {
 	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
 	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
 	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
+	Route::get('/thongkedulieutheoquocgia', 'MarketingController@getThongkedulieutheoquocgia')->name('get-thongkedulieutheoquocgia');
+
+	Route::get('/getoverall', 'MarketingController@getOverall')->name('get-overall');
+	Route::get('/getsummary', 'MarketingController@getSummary')->name('get-summary');
 });
 
 

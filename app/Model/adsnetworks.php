@@ -15,6 +15,12 @@ class adsnetworks extends Model
 		return $adsnetworks;
 	}
 
+	public function getListAdsGroup(){
+		$ads = $this::groupBy('adsnetworkid')->get();
+
+		return $ads;
+	}
+
 	public function getAdsnetworkidDesc(){
 		$adsnetworks = $this::select('adsnetworkid')->orderBy('adsnetworkid','DESC')->first();
 

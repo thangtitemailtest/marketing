@@ -114,9 +114,14 @@
                 <span>Thêm dữ liệu</span></a>
         </li>
         <li class="nav-item">
+            <a class="nav-link" href="{{route('get-thongkedulieutheoquocgia')}}">
+                <i class="fas fa-globe"></i>
+                <span>Thống kê dữ liệu theo<br>quốc gia</span></a>
+        </li>
+        <li class="nav-item">
             <a class="nav-link" href="{{route('get-caidatnuoc')}}">
                 <i class="fas fa-globe"></i>
-                <span>Cài đặt nước</span></a>
+                <span>Cài đặt quốc gia</span></a>
         </li>
 
     {{--<li class="nav-item">
@@ -151,9 +156,15 @@
             <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
                 <!-- Sidebar Toggle (Topbar) -->
-                <button id="sidebarToggleTop" class="btn btn-link d-md-none rounded-circle mr-3">
+                <button id="ToggleNav" class="btn btn-link rounded-circle mr-3" onclick="clickToggle()">
                     <i class="fa fa-bars"></i>
                 </button>
+                
+                <script>
+                    function clickToggle() {
+                        $('#accordionSidebar').toggle(500);
+                    }
+                </script>
 
                 <!-- Topbar Search -->
 

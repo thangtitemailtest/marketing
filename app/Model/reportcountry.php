@@ -65,4 +65,13 @@ class reportcountry extends Model
 
 		return 1;
 	}
+
+	public function getListWhereDate($datefrom, $dateto)
+	{
+		$country = $this::where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
+			->get();
+
+		return $country;
+	}
 }

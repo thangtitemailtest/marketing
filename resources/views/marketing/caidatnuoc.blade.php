@@ -5,7 +5,7 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Cài đặt nước</h1>
+            <h1 class="h3 mb-0 text-gray-800">Cài đặt quốc gia</h1>
         </div>
 
         <!-- Content Row -->
@@ -102,7 +102,7 @@
 
         function vebang() {
             var json = JSON.parse($("#json").val());
-            var $table = $('<table class="table table-bordered" width="100%" cellspacing="0"></table>');
+            var $table = $('<table class="table table-bordered table-hover" width="100%" cellspacing="0"></table>');
             var $thead = $('<thead></thead>');
             var $tr = $('<tr></tr>');
             $tr.append($('<th>Nước</th>'));

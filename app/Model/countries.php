@@ -33,4 +33,14 @@ class countries extends Model
 
 		return 1;
 	}
+
+	public function getListCountryArrayKeyCode(){
+		$country = $this::getListCountryShow();
+		$arr = [];
+		foreach ($country as $item) {
+			$arr[$item->code] = $item->name;
+		}
+
+		return $arr;
+	}
 }

@@ -89,7 +89,7 @@ class MarketingController extends Controller
 		$game_obj = new game();
 		$games = $game_obj->getListGame();
 		$adsnetwork_obj = new adsnetworks();
-		$adsnetwork = $adsnetwork_obj->getListAdsnetworks();
+		$adsnetwork = $adsnetwork_obj->getListAdsGroup();
 		$country_obj = new countries();
 		$country = $country_obj->getListCountryShow();
 		return view('marketing.themdulieu', compact('games', 'adsnetwork', 'country'));
@@ -146,6 +146,102 @@ class MarketingController extends Controller
 		$country_obj = new countries();
 		$country = $country_obj->getListCountryShow();
 		return view('marketing.themdulieu', compact('games', 'adsnetwork', 'country'));*/
+	}
+
+	public function getThongkedulieutheoquocgia()
+	{
+		$adsnetwork_obj = new adsnetworks();
+		$adsnetwork = $adsnetwork_obj->getListAdsGroup();
+		$count_adsnetwork = count($adsnetwork);
+		$country_obj = new countries();
+		$country = $country_obj->getListCountryShow();
+
+		return view('marketing.thongkedulieutheoquocgia', compact('adsnetwork', 'count_adsnetwork', 'country'));
+	}
+
+	public function getOverall(Request $request)
+	{
+		$input = $request->all();
+		$month = $input['month'];
+		$datefrom = date('Y-m-d', strtotime('first day of this month', strtotime($month)));
+		$dateto = date('Y-m-d', strtotime('last day of this month', strtotime($month)));
+
+		$country_obj = new countries();
+		$country = $country_obj->getListCountryArrayKeyCode();
+
+		$reportcountry_obj = new reportcountry();
+		$reportcountry = $reportcountry_obj->getListWhereDate($datefrom, $dateto);
+
+		$arrreport = [];
+		foreach ($reportcountry as $item) {
+			$code = $item->countrycode;
+			if (isset($country[$code])) {
+				if (empty($arrreport[$code]['install'])) $arrreport[$code]['install'] = 0;
+				if (empty($arrreport[$code]['revenue'])) $arrreport[$code]['revenue'] = 0;
+				if (empty($arrreport[$code]['cost'])) $arrreport[$code]['cost'] = 0;
+				if (empty($arrreport[$code]['cost'])) $arrreport[$code]['cost'] = 0;
+
+				$arrreport[$code]['name'] = $country[$code];
+				$arrreport[$code]['install'] += $item->install;
+				$arrreport[$code]['revenue'] += $item->revenue;
+				$arrreport[$code]['cost'] += $item->cost;
+			}
+		}
+
+
+		return json_encode($arrreport);
+	}
+
+	public function getSummary(Request $request)
+	{
+		$input = $request->all();
+		$month = $input['month'];
+		$month_truoc = date('Y-m', strtotime('-1 month', strtotime($month)));
+		$month_truoc_kia = date('Y-m', strtotime('-2 month', strtotime($month)));
+
+		$datefrom = date('Y-m-d', strtotime('first day of this month', strtotime($month)));
+		$dateto = date('Y-m-d', strtotime('last day of this month', strtotime($month)));
+
+		$datefrom_truoc = date('Y-m-d', strtotime('first day of this month', strtotime($month_truoc)));
+		$dateto_truoc = date('Y-m-d', strtotime('last day of this month', strtotime($month_truoc)));
+
+		$datefrom_truoc_kia = date('Y-m-d', strtotime('first day of this month', strtotime($month_truoc_kia)));
+		$dateto_truoc_kia = date('Y-m-d', strtotime('last day of this month', strtotime($month_truoc_kia)));
+
+		$country_obj = new countries();
+		$country = $country_obj->getListCountryArrayKeyCode();
+
+		$reportcountry_obj = new reportcountry();
+		$reportcountry = $reportcountry_obj->getListWhereDate($datefrom, $dateto);
+
+		$sum_cost_month = 0;
+		$sum_revenue_month = 0;
+		$sum_install_month = 0;
+
+		$sum_cost_month_truoc = 0;
+		$sum_revenue_month_truoc = 0;
+		$sum_install_month_truoc = 0;
+
+		$sum_cost_month_truoc_kia = 0;
+		$sum_revenue_month_truoc_kia = 0;
+		$sum_install_month_truoc_kia = 0;
+
+		$arr_sumall = [];
+
+		foreach ($reportcountry as $item) {
+			$code = $item->countrycode;
+			if (isset($country[$code])) {
+				if (empty($arrreport[$code]['install'])) $arrreport[$code]['install'] = 0;
+				if (empty($arrreport[$code]['revenue'])) $arrreport[$code]['revenue'] = 0;
+				if (empty($arrreport[$code]['cost'])) $arrreport[$code]['cost'] = 0;
+				if (empty($arrreport[$code]['cost'])) $arrreport[$code]['cost'] = 0;
+
+				$arrreport[$code]['name'] = $country[$code];
+				$arrreport[$code]['install'] += $item->install;
+				$arrreport[$code]['revenue'] += $item->revenue;
+				$arrreport[$code]['cost'] += $item->cost;
+			}
+		}
 	}
 
 	public function rmcomma($str)
