@@ -82,7 +82,7 @@
                 <div class="row">
                     <div class="col-md-8 col-md-offset-2">
                         <div class="panel panel-default">
-                            <div class="panel-heading text-center"><h3>Login Game Center</h3></div>
+                            <div class="panel-heading text-center"><h3>Login Marketing</h3></div>
 
                             <div class="panel-body">
                                 <form class="form-horizontal" method="POST" action="{{route('post-login')}}">

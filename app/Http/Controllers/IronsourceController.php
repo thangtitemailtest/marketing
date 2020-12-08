@@ -72,9 +72,9 @@ class IronsourceController extends Controller
 				echo 'Could not open destination file';
 			}
 
-			$sum_revenue_game = 0;
-			$arr_report_adsnetwork = [];
-			$arr_report_country = [];
+			//$sum_revenue_game = 0;
+			//$arr_report_adsnetwork = [];
+			//$arr_report_country = [];
 			$arr_report = [];
 			$row = 0;
 			while (($data = fgetcsv($dest, 1000, ",")) !== FALSE) {
@@ -87,15 +87,15 @@ class IronsourceController extends Controller
 						$country = $data[7];
 						$revenue = $data[11];
 
-						if (empty($arr_report_adsnetwork[$adsnetwork]['revenue'])) $arr_report_adsnetwork[$adsnetwork]['revenue'] = 0;
-						if (empty($arr_report_country[$country]['revenue'])) $arr_report_country[$country]['revenue'] = 0;
+						//if (empty($arr_report_adsnetwork[$adsnetwork]['revenue'])) $arr_report_adsnetwork[$adsnetwork]['revenue'] = 0;
+						//if (empty($arr_report_country[$country]['revenue'])) $arr_report_country[$country]['revenue'] = 0;
 						if (empty($arr_report[$adsnetwork][$country]['revenue'])) $arr_report[$adsnetwork][$country]['revenue'] = 0;
 
-						$arr_report_adsnetwork[$adsnetwork]['revenue'] += $revenue;
-						$arr_report_country[$country]['revenue'] += $revenue;
+						//$arr_report_adsnetwork[$adsnetwork]['revenue'] += $revenue;
+						//$arr_report_country[$country]['revenue'] += $revenue;
 						$arr_report[$adsnetwork][$country]['revenue'] += $revenue;
 
-						$sum_revenue_game += $revenue;
+						//$sum_revenue_game += $revenue;
 					}
 				}
 
@@ -107,9 +107,9 @@ class IronsourceController extends Controller
 			$result['status'] = 1;
 			$result['message'] = '';
 			$result['arr_report'] = $arr_report;
-			$result['sum_revenue_game'] = $sum_revenue_game;
-			$result['arr_report_adsnetwork'] = $arr_report_adsnetwork;
-			$result['arr_report_country'] = $arr_report_country;
+			//$result['sum_revenue_game'] = $sum_revenue_game;
+			//$result['arr_report_adsnetwork'] = $arr_report_adsnetwork;
+			//$result['arr_report_country'] = $arr_report_country;
 
 			return json_encode($result);
 
@@ -122,13 +122,13 @@ class IronsourceController extends Controller
 	public function insertIronsource($date, $games, $arr_adsnetworks)
 	{
 		$reportdata_obj = new reportdata();
-		$reportgame_obj = new reportgame();
-		$reportadsnetwork_obj = new reportadsnetwork();
-		$reportcountry_obj = new reportcountry();
+		//$reportgame_obj = new reportgame();
+		//$reportadsnetwork_obj = new reportadsnetwork();
+		//$reportcountry_obj = new reportcountry();
 		$adsnetworks_obj = new adsnetworks();
 
-		$arr_report_adsnetwork_sum = [];
-		$arr_report_country_sum = [];
+		//$arr_report_adsnetwork_sum = [];
+		//$arr_report_country_sum = [];
 
 		foreach ($games as $item) {
 			if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
@@ -137,29 +137,31 @@ class IronsourceController extends Controller
 				$ironsource = $this->getRevenueIronsource($appKey, $date);
 				$ironsource = json_decode($ironsource, true);
 				if ($ironsource['status'] == 1) {
-					$sum_revenue_game = $ironsource['sum_revenue_game'];
+					//$sum_revenue_game = $ironsource['sum_revenue_game'];
 					$arr_ironsource = $ironsource['arr_report'];
-					$arr_report_adsnetwork = $ironsource['arr_report_adsnetwork'];
-					$arr_report_country = $ironsource['arr_report_country'];
+					//$arr_report_adsnetwork = $ironsource['arr_report_adsnetwork'];
+					//$arr_report_country = $ironsource['arr_report_country'];
 
 					// report data
 					foreach ($arr_ironsource as $adsnetwork => $item_country) {
 						foreach ($item_country as $country => $item_data) {
-							if (!isset($arr_adsnetworks[$adsnetwork])) {
+							/*if (!isset($arr_adsnetworks[$adsnetwork])) {
 								$adsnetwork_id = $adsnetworks_obj->insertAdsnetworks($adsnetwork);
 								$arr_adsnetworks[$adsnetwork] = $adsnetwork_id;
-							}
+							}*/
 
-							$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
-							$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+							if ($adsnetwork == 'IronSource' || $adsnetwork == 'ironsource') {
+								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
+								$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+							}
 						}
 					}
 
 					// report game
-					$reportgame_obj->insertReportgame_revenue($date, $gameid, $sum_revenue_game);
+					//$reportgame_obj->insertReportgame_revenue($date, $gameid, $sum_revenue_game);
 
 					// report adsnetwork
-					foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
+					/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
 						if (!isset($arr_adsnetworks[$adsnetwork])) {
 							$adsnetwork_id = $adsnetworks_obj->insertAdsnetworks($adsnetwork);
 							$arr_adsnetworks[$adsnetwork] = $adsnetwork_id;
@@ -168,26 +170,26 @@ class IronsourceController extends Controller
 						$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
 						if (empty($arr_report_adsnetwork_sum[$adsnetwork_id]['revenue'])) $arr_report_adsnetwork_sum[$adsnetwork_id]['revenue'] = 0;
 						$arr_report_adsnetwork_sum[$adsnetwork_id]['revenue'] += $item_adsnetwork['revenue'];
-					}
+					}*/
 
 					// report country
-					foreach ($arr_report_country as $country => $item_country) {
+					/*foreach ($arr_report_country as $country => $item_country) {
 						if (empty($arr_report_country_sum[$country]['revenue'])) $arr_report_country_sum[$country]['revenue'] = 0;
 						$arr_report_country_sum[$country]['revenue'] += $item_country['revenue'];
-					}
+					}*/
 				}
 			}
 		}
 
 		// report adsnetwork
-		foreach ($arr_report_adsnetwork_sum as $adsnetwork_id => $item_adsnetwork) {
+		/*foreach ($arr_report_adsnetwork_sum as $adsnetwork_id => $item_adsnetwork) {
 			$reportadsnetwork_obj->insertReportadsnetwork_revenue($date, $adsnetwork_id, $item_adsnetwork['revenue']);
-		}
+		}*/
 
 		// report country
-		foreach ($arr_report_country_sum as $country => $item_country) {
+		/*foreach ($arr_report_country_sum as $country => $item_country) {
 			$reportcountry_obj->insertReportcountry_revenue($date, $country, $item_country['revenue']);
-		}
+		}*/
 
 		return 1;
 	}

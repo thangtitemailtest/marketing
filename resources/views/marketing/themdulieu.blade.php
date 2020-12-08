@@ -33,7 +33,8 @@
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">Game</label>
-                                <select name="game" id="game" class="form-control chosen-select">
+                                <select name="game" id="game" class="form-control chosen-select"
+                                        onchange="changeGame()">
                                     <option value="0">--Chọn Game--</option>
                                     @foreach($games as $item)
                                         <option value="{{$item->gameid}}">{{$item->gamename}}</option>
@@ -58,70 +59,8 @@
                             text-align: center;
                         }
                     </style>
-                    <div class="row">
-                        <div class="col-md-12 table-responsive">
-                            <table class="table table-bordered table-striped" width="100%" cellspacing="0"
-                                   id="dataTable">
-                                <thead>
-                                <tr>
-                                    <th rowspan="2">Country</th>
-                                    <th rowspan="2">Budget</th>
-                                    <th colspan="2">Cost</th>
-                                    <th rowspan="2">CPI target</th>
-                                    <th rowspan="2">CTR</th>
-                                    <th rowspan="2">CR</th>
-                                    <th rowspan="2">Install</th>
-                                    <th colspan="2">Revenue</th>
-                                </tr>
-                                <tr>
-                                    <th>USD</th>
-                                    <th>VND</th>
-                                    <th>USD</th>
-                                    <th>VND</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                @if(!empty($country))
-                                    @foreach($country as $key => $item)
-                                        <tr>
-                                            <input type="hidden" name="countrycode{{$item->code}}"
-                                                   id="countrycode{{$item->code}}" value="{{$item->code}}">
-                                            <td>{{$item->name}} ({{$item->code}})</td>
-                                            <td><input type="number" class="form-control" name="budget{{$item->code}}"
-                                                       id="budget{{$item->code}}">
-                                            </td>
-                                            <td><input type="number" class="form-control" name="costusd{{$item->code}}"
-                                                       id="costusd{{$item->code}}"
-                                                       onkeyup="changeCostUsd('{{$item->code}}')">
-                                            </td>
-                                            <td><input type="text" class="form-control" name="costvnd{{$item->code}}"
-                                                       onkeyup="changeCostVnd(this,'{{$item->code}}')"
-                                                       id="costvnd{{$item->code}}">
-                                            </td>
-                                            <td><input type="number" class="form-control"
-                                                       name="cpitarget{{$item->code}}" id="cpitarget{{$item->code}}">
-                                            </td>
-                                            <td><input type="number" class="form-control" name="ctr{{$item->code}}"
-                                                       id="ctr{{$item->code}}">
-                                            </td>
-                                            <td><input type="number" class="form-control" name="cr{{$item->code}}"
-                                                       id="cr{{$item->code}}"></td>
-                                            <td><input type="number" class="form-control" name="install{{$item->code}}"
-                                                       id="install{{$item->code}}">
-                                            </td>
-                                            <td><input type="number" class="form-control"
-                                                       name="revenueusd{{$item->code}}" id="revenueusd{{$item->code}}"
-                                                       onkeyup="changeRevenueUsd('{{$item->code}}')"></td>
-                                            <td><input type="text" class="form-control"
-                                                       onkeyup="changeRevenueVnd(this,'{{$item->code}}')"
-                                                       name="revenuevnd{{$item->code}}" id="revenuevnd{{$item->code}}">
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @endif
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="row" id="divbang">
+
                     </div>
 
                     <div class="row" id="divdoi" style="margin-bottom: 20px;display: none">
@@ -163,6 +102,27 @@
             }, 3000);
         });
 
+        function changeGame() {
+            var gameid = $('#game').val();
+            $('#divbang').empty();
+            if (gameid != 0) {
+                $('#divbang').html('<div class="loader"></div>');
+
+                $.ajax({
+                    url: "{{route('get-bangthemdulieu')}}",
+                    //async: false,
+                    dataType: "text",
+                    data: {gameid: gameid},
+                    type: "GET",
+                    success: function (data) {
+                        $('#divbang').html(data);
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+
         function changeCostUsd(code) {
             var costusd = $('#costusd' + code).val();
             var costvnd = costusd * {{config('tygia.cost')}};
@@ -197,18 +157,18 @@
 
         function clickXacNhan() {
 
-            if ($('#date').val() == ''){
-                makeAlertright("Vui lòng chọn Ngày",2000);
+            if ($('#date').val() == '') {
+                makeAlertright("Vui lòng chọn Ngày", 2000);
                 return;
             }
 
-            if ($('#game').val() == 0){
-                makeAlertright("Vui lòng chọn Game",2000);
+            if ($('#game').val() == 0) {
+                makeAlertright("Vui lòng chọn Game", 2000);
                 return;
             }
 
-            if ($('#adsnetwork').val() == 0){
-                makeAlertright("Vui lòng chọn Adsnetwork",2000);
+            if ($('#adsnetwork').val() == 0) {
+                makeAlertright("Vui lòng chọn Adsnetwork", 2000);
                 return;
             }
 

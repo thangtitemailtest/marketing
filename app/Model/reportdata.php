@@ -89,4 +89,47 @@ class reportdata extends Model
 
 		return $sum;
 	}
+
+	public function sumReportdataGameDate($colsum, $gameid, $datefrom, $dateto)
+	{
+		$sum = $this::where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
+			->where('gameid', '=', $gameid);
+		$sum = $sum->sum($colsum);
+
+		return $sum;
+	}
+
+	public function getListWhereGameDate($gameid, $datefrom, $dateto)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
+			->where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
+			->where('gameid', '=', $gameid)
+			->get();
+
+		return $reportdata;
+	}
+
+	public function getListWhereGameAll($gameid)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
+			->where('gameid', '=', $gameid)
+			->get();
+
+		return $reportdata;
+	}
+
+	public function getListWhereGameAdsCountryDate($gameid, $adsnetworkid, $countrycode, $datefrom, $dateto)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
+			->where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
+			->where('gameid', '=', $gameid)
+			->where('adsnetworkid', '=', $adsnetworkid)
+			->where('countrycode', '=', $countrycode)
+			->get();
+
+		return $reportdata;
+	}
 }

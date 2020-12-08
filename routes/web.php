@@ -49,11 +49,16 @@ Route::middleware('Checklogin')->group(function () {
 Route::middleware('Checklogout')->group(function () {
 	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
 	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
+	Route::get('/bangthemdulieu', 'MarketingController@getBangthemdulieu')->name('get-bangthemdulieu');
 	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
+	Route::get('/countrygame', 'MarketingController@getCountrygame')->name('get-countrygame');
+	Route::post('/caidatnuoc-post', 'MarketingController@postCaidatnuoc')->name('post-caidatnuoc');
 	Route::get('/thongkedulieutheoquocgia', 'MarketingController@getThongkedulieutheoquocgia')->name('get-thongkedulieutheoquocgia');
 
 	Route::get('/getoverall', 'MarketingController@getOverall')->name('get-overall');
 	Route::get('/getsummary', 'MarketingController@getSummary')->name('get-summary');
+	Route::get('/summary-month', 'MarketingController@getSummarymonth')->name('get-summary-month');
+	Route::get('/getcountry', 'MarketingController@getCountry')->name('get-country');
 });
 
 

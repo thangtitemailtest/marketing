@@ -34,13 +34,22 @@ class countries extends Model
 		return 1;
 	}
 
-	public function getListCountryArrayKeyCode(){
-		$country = $this::getListCountryShow();
+	public function getListCountryArrayKeyCode($gameid)
+	{
+		$settingcountry = new settingcountry();
+		$country = $settingcountry->getListCountryGame($gameid);
 		$arr = [];
 		foreach ($country as $item) {
 			$arr[$item->code] = $item->name;
 		}
 
 		return $arr;
+	}
+
+	public function getCountry($countrycode)
+	{
+		$country = $this::where('code', '=', $countrycode)->first();
+
+		return $country;
 	}
 }

@@ -10,45 +10,61 @@
 
         <!-- Content Row -->
         <div class="card shadow mb-4">
-            <div class="card-body">
-                @if(!empty($mess))
+            <form action="{{route('post-caidatnuoc')}}" method="post" id="filter-frm">
+                <div class="card-body">
+                    @if(Session::has('mess'))
+                        <div class="row">
+                            <div class="col-md-12 alert alert-success">{{Session::get('mess')}}</div>
+                        </div>
+                    @endif
                     <div class="row">
-                        <div class="col-md-12 alert alert-success">{{$mess}}</div>
-                    </div>
-                @endif
-                <div class="row">
-                    <div class="col-md-3" style="height: 80px;">
-                        <div class="form-group input-group-sm">
-                            <label class="radio-inline mr-3">Country</label>
-                            <select name="country" id="country" class="form-control chosen-select">
-                                <option value="0">--Chọn Country--</option>
-                                @foreach($country as $item)
-                                    <option value="{{$item->code}}">{{$item->name}} ({{$item->code}})</option>
-                                @endforeach
-                            </select>
+                        <div class="col-md-3" style="height: 80px;">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">Game</label>
+                                <select name="gameid" id="gameid" class="form-control chosen-select"
+                                        onchange="changeGame()">
+                                    <option value="0">--Chọn Game--</option>
+                                    @foreach($games as $item)
+                                        <option value="{{$item->gameid}}">{{$item->gamename}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="height: auto;">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">Country</label>
+                                <select name="country[]" id="country" multiple class="form-control chosen-select">
+                                    {{--<option value="0">--Chọn Country--</option>--}}
+                                    @foreach($country as $item)
+                                        <option value="{{$item->code}}">{{$item->name}} ({{$item->code}})</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3" style="height: 80px;padding-top: 30px;">
+                            <button type="button" class="btn btn-primary btn-sm" onclick="clickThem()">Thêm</button>
                         </div>
                     </div>
-                    <div class="col-md-3" style="height: 80px;padding-top: 30px;">
-                        <button type="button" class="btn btn-primary btn-sm" onclick="clickThem()">Thêm</button>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12" id="divbang">
+                    <div class="row">
+                        <div class="col-md-12" id="divbang">
 
+                        </div>
                     </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-md-12" style="text-align: center">
-                        <button type="button" class="btn btn-primary" onclick="clickXacNhan()">Xác nhận</button>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-12" style="text-align: center">
+                            <button type="button" class="btn btn-primary" onclick="clickXacNhan()">Xác nhận</button>
+                        </div>
                     </div>
-                </div>
-                <div class="row">
-                    <div class="col-xs-12 col-md-12" id="divload">
+                    <div class="row">
+                        <div class="col-xs-12 col-md-12" id="divload">
 
+                        </div>
                     </div>
                 </div>
-            </div>
+                {{csrf_field()}}
+                <input type="hidden" name="json" id="json" value='[]'>
+            </form>
         </div>
 
         <!-- Scroll to Top Button-->
@@ -57,9 +73,6 @@
         </a>
     </div>
 
-    <form action="{{route('get-caidatnuoc')}}" method="GET" id="filter-frm">
-        <input type="hidden" name="json" id="json" value='{{$json}}'>
-    </form>
 
     <link rel="stylesheet" href="{{asset('chosen/chosen.min.css')}}">
     <script type="text/javascript" src="{{asset('chosen/chosen.jquery.min.js')}}"></script>
@@ -69,33 +82,67 @@
 
         $('.chosen-select').chosen();
 
-        $(function () {
-            vebang();
-        });
+        function changeGame() {
+            var gameid = $('#gameid').val();
+            if (gameid == 0) {
+                $("#divbang").empty();
+            } else {
+                $("#divbang").html('<div class="loader"></div>');
+
+                $.ajax({
+                    url: "{{route('get-countrygame')}}",
+                    //async: false,
+                    dataType: "json",
+                    data: {gameid: gameid},
+                    type: "GET",
+                    success: function (data) {
+                        $('#json').val(JSON.stringify(data));
+                        vebang();
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
 
         function clickThem() {
-            var country = $('#country').val();
-            var country_text = $('#country option:selected').text();
-            var json = JSON.parse($("#json").val());
-            var check = false;
-            $.each(json, function (key, value) {
-                if (value.code == country) {
-                    check = true;
-                }
-            });
-
-            if (check == true) {
-                makeAlertright("Nước này đã được thêm rồi!", 2000);
+            var gameid = $('#gameid').val();
+            if (gameid == 0) {
+                makeAlertright('Vui lòng chọn Game!', 2000);
                 return;
             }
 
-            json.push({
-                'code': country,
-                'name': country_text,
+            var country = $('#country').val();
+            if (country == '' || country == null) {
+                makeAlertright('Vui lòng chọn Country!', 2000);
+                return;
+            }
+            //var country_text = $('#country option:selected').text();
+            var json = JSON.parse($("#json").val());
+            var check = false;
+            var nuocthemroi = '';
+            $.each(json, function (key, value) {
+                $('#country :selected').each(function () {
+                    if ($(this).val() == value.code) {
+                        check = true;
+                        nuocthemroi += $(this).text() + ", ";
+                    }
+                });
             });
-            $('#json').val(JSON.stringify(json));
 
-            $('#country').val(0).trigger('chosen:updated');
+            if (check == true) {
+                makeAlertright("Nước " + nuocthemroi + " đã được thêm rồi!", 3000);
+                return;
+            }
+
+            $('#country :selected').each(function () {
+                json.push({
+                    'code': $(this).val(),
+                    'name': $(this).text(),
+                });
+            });
+
+            $('#json').val(JSON.stringify(json));
 
             vebang();
         }
@@ -112,16 +159,36 @@
 
             var $tbody = $('<tbody></tbody>');
 
-            $.each(json, function (key, value) {
+            /*$.each(json, function (key, value) {
                 var $tr = $('<tr></tr>');
                 $tr.append('<td>' + value.name + '</td>');
                 $tr.append('<td><button class="btn btn-danger btn-sm" onclick="clickXoa(' + key + ')"><i class="fas fa-times"></i></button></td>');
                 $tbody.append($tr);
-            });
+            });*/
+
+            for (var i = json.length - 1; i >= 0; i--) {
+                var emp = json[i];
+                var $tr = $('<tr></tr>');
+                $('#country :selected').each(function () {
+                    if ($(this).val() == emp.code) {
+                        $tr = $('<tr class="newline"></tr>');
+                    }
+                });
+                $tr.append('<td>' + emp.name + '</td>');
+                $tr.append('<td><button class="btn btn-danger btn-sm" onclick="clickXoa(' + i + ')"><i class="fas fa-times"></i></button></td>');
+                $tbody.append($tr);
+            }
 
             $table.append($tbody);
 
             $('#divbang').html($table);
+
+            $('.newline').css("background-color", "yellow");
+            setTimeout(function () {
+                $('.newline').css("background-color", "white");
+            }, 300);
+
+            $('#country').val('').trigger('chosen:updated');
         }
 
         function clickXoa(i) {
@@ -133,6 +200,12 @@
         }
 
         function clickXacNhan() {
+            var gameid = $('#gameid').val();
+            if (gameid == 0) {
+                makeAlertright('Vui lòng chọn Game!', 2000);
+                return;
+            }
+
             $('#filter-frm').submit();
         }
 
