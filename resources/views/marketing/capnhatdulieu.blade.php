@@ -17,13 +17,22 @@
                             Dữ liệu đã được cập nhật.
                         </div>
                     @else
-                        <div class="col-xs-3 col-md-3">
+                        <div class="col-xs-3 col-md-2">
                             <button class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">Cập nhật dữ
                                 liệu
                             </button>
                         </div>
+                        <div class="col-sm-3" style="height:85px">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">Ngày
+                                </label>
+                                <input type="date" name="ngay" class="form-control" id="ngay" onchange="changeNgay()"
+                                       value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}">
+                            </div>
+                        </div>
                         <div class="col-xs-9 col-md-9" id="thongbao" style="display: none">
-                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p - 20p. Vui lòng đợi và không
+                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p - 20p. Vui lòng đợi và
+                                không
                                 tắt
                                 trang này.</code>
                         </div>
@@ -60,7 +69,10 @@
                 <div class="modal-footer">
                     <form action="{{ route('get-capnhatdulieu') }}" method="GET" id="filter-frm">
                         <input type="hidden" name="capnhatdulieu" id="capnhatdulieu" value="1">
-                        <button type="button" class="btn btn-primary" onclick="clickCapnhat()" id="btnsubmit" style="margin-right: 10px">Cập nhật
+                        <input type="hidden" name="date" id="date"
+                               value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}">
+                        <button type="button" class="btn btn-primary" onclick="clickCapnhat()" id="btnsubmit"
+                                style="margin-right: 10px">Cập nhật
                         </button>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Đóng</button>
                     </form>
@@ -72,11 +84,21 @@
     <!-- Page level plugins -->
     <script>
 
+        function changeNgay() {
+            var ngay = $('#ngay').val();
+            $('#date').val(ngay);
+        }
+
         function clickCapnhat() {
             event.preventDefault();
 
             var conf = confirm('Bạn có muốn cập nhật không?');
             if (conf) {
+
+                if ($('#date').val() == '') {
+                    makeAlertright('Vui lòng chọn Ngày.', 3000);
+                    return;
+                }
 
                 $('#exampleModal').modal('hide');
                 $('#thongbao').show();

@@ -102,11 +102,13 @@
             </li>
         @endif
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('get-capnhatdulieu')}}">
-                <i class="fas fa-folder"></i>
-                <span>Cập nhật dữ liệu</span></a>
-        </li>
+        @if(Auth::check() && $permission[0] == 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('get-capnhatdulieu')}}">
+                    <i class="fas fa-folder"></i>
+                    <span>Cập nhật dữ liệu</span></a>
+            </li>
+        @endif
 
         <li class="nav-item">
             <a class="nav-link" href="{{route('get-themdulieu')}}">
@@ -159,7 +161,7 @@
                 <button id="ToggleNav" class="btn btn-link rounded-circle mr-3" onclick="clickToggle()">
                     <i class="fa fa-bars"></i>
                 </button>
-                
+
                 <script>
                     function clickToggle() {
                         $('#accordionSidebar').toggle(500);

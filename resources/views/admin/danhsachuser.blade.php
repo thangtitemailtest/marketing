@@ -52,7 +52,7 @@
                                     <td>{{$item->name}}</td>
                                     <td>{{$item->username}}</td>
                                     <td>
-                                        @if($item->username != 'admin')
+                                        @if($item->username != 'admin' && $item->permission != '["admin"]')
                                             <a href="{{route('get-phanquyenuser',$item->id)}}">
                                                 <button class="btn btn-primary btn-xs" style="margin-right: 10px">Phân
                                                     quyền

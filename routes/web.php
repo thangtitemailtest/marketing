@@ -47,7 +47,7 @@ Route::middleware('Checklogin')->group(function () {
 });
 
 Route::middleware('Checklogout')->group(function () {
-	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
+	//Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
 	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
 	Route::get('/bangthemdulieu', 'MarketingController@getBangthemdulieu')->name('get-bangthemdulieu');
 	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
@@ -67,7 +67,10 @@ Route::get('/getdatamarketing', 'MarketingController@getDataMarketing')->name('g
 
 Route::get('/adsword', 'AdswordController@getAdsword')->name('get-asdwords');
 Route::get('/ironsource', 'IronsourceController@getIronsource')->name('get-ironsource');
+Route::get('/unityads', 'UnityadsController@getUnityads');
 //Route::get('/revenueironsource', 'IronsourceController@getRevenueIronsource');
 /*END Ads*/
+
+//Route::get('/taoadmin', 'HomeController@taoadmin');
 
 //Auth::routes();

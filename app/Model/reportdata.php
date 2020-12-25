@@ -41,18 +41,19 @@ class reportdata extends Model
 		return 1;
 	}
 
-	public function insertReportdata_all_form($date, $gameid, $adsnetworkid, $countrycode, $revenue, $cost, $budget, $cpitarget, $ctr, $cr, $install)
+	public function insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install, $cpi = '')
 	{
 		$checkReportdata = $this->checkReportdata($date, $gameid, $adsnetworkid, $countrycode);
 		if ($checkReportdata) {
 			$checkReportdata->updatedate = date('Y-m-d H:i:s');
-			$checkReportdata->revenue = $revenue;
 			$checkReportdata->cost = $cost;
 			$checkReportdata->budget = $budget;
-			$checkReportdata->cpitarget = $cpitarget;
 			$checkReportdata->ctr = $ctr;
 			$checkReportdata->cr = $cr;
 			$checkReportdata->install = $install;
+			if (!empty($cpi)){
+				$checkReportdata->cpitarget = $cpi;
+			}
 			$checkReportdata->save();
 		} else {
 			$reportdata_obj = new reportdata();
@@ -60,13 +61,72 @@ class reportdata extends Model
 			$reportdata_obj->gameid = $gameid;
 			$reportdata_obj->adsnetworkid = $adsnetworkid;
 			$reportdata_obj->countrycode = $countrycode;
-			$reportdata_obj->revenue = $revenue;
 			$reportdata_obj->cost = $cost;
 			$reportdata_obj->budget = $budget;
-			$reportdata_obj->cpitarget = $cpitarget;
 			$reportdata_obj->ctr = $ctr;
 			$reportdata_obj->cr = $cr;
 			$reportdata_obj->install = $install;
+			if (!empty($cpi)){
+				$reportdata_obj->cpitarget = $cpi;
+			}
+			$reportdata_obj->save();
+		}
+	}
+
+	public function insertReportdata_all_form($date, $gameid, $adsnetworkid, $countrycode, $revenue, $cost, $budget, $cpitarget, $ctr, $cr, $install)
+	{
+		$checkReportdata = $this->checkReportdata($date, $gameid, $adsnetworkid, $countrycode);
+		if ($checkReportdata) {
+			$checkReportdata->updatedate = date('Y-m-d H:i:s');
+			if (!empty($revenue)) {
+				$checkReportdata->revenue = $revenue;
+			}
+			if (!empty($cost)) {
+				$checkReportdata->cost = $cost;
+			}
+			if (!empty($budget)) {
+				$checkReportdata->budget = $budget;
+			}
+			if (!empty($cpitarget)) {
+				$checkReportdata->cpitarget = $cpitarget;
+			}
+			if (!empty($ctr)) {
+				$checkReportdata->ctr = $ctr;
+			}
+			if (!empty($cr)) {
+				$checkReportdata->cr = $cr;
+			}
+			if (!empty($install)) {
+				$checkReportdata->install = $install;
+			}
+			$checkReportdata->save();
+		} else {
+			$reportdata_obj = new reportdata();
+			$reportdata_obj->date = $date;
+			$reportdata_obj->gameid = $gameid;
+			$reportdata_obj->adsnetworkid = $adsnetworkid;
+			$reportdata_obj->countrycode = $countrycode;
+			if (!empty($revenue)) {
+				$checkReportdata->revenue = $revenue;
+			}
+			if (!empty($cost)) {
+				$checkReportdata->cost = $cost;
+			}
+			if (!empty($budget)) {
+				$checkReportdata->budget = $budget;
+			}
+			if (!empty($cpitarget)) {
+				$checkReportdata->cpitarget = $cpitarget;
+			}
+			if (!empty($ctr)) {
+				$checkReportdata->ctr = $ctr;
+			}
+			if (!empty($cr)) {
+				$checkReportdata->cr = $cr;
+			}
+			if (!empty($install)) {
+				$checkReportdata->install = $install;
+			}
 			$reportdata_obj->save();
 		}
 

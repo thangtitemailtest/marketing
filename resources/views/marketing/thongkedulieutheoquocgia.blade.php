@@ -92,11 +92,33 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-3" style="height: 80px;">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">Adsnetowrk &nbsp; &nbsp; </label>
+                                <select name="adsnetworkid" id="adsnetworkid" class="form-control chosen-select">
+                                    <option value="0">--Chọn Adsnetwork--</option>
+                                    @foreach($adsnetwork as $item)
+                                        <option value="{{$item->adsnetworkid}}" {{isset($_GET['adsnetworkid']) && $_GET['adsnetworkid'] == $item->adsnetworkid ? "selected" : ""}}>{{$item->adsnetworkshow}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-sm-3" style="height:85px">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">
+                                    <input type="radio" name="time" id="time-0" onchange="changeRadio('ngay')"
+                                           {{(isset($_GET['time']) && $_GET['time'] == 'ngay') || empty($_GET['time']) ? 'checked' : ''}}
+                                           value="ngay">&nbsp;Theo ngày
+                                </label>
+                                <input type="date" name="ngay" class="form-control" id="ngay"
+                                       value="{{isset($_GET['ngay']) && !empty($_GET['ngay']) ? $_GET['ngay'] : date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}">
+                            </div>
+                        </div>
                         <div class="col-sm-3" style="height:85px">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">
                                     <input type="radio" name="time" id="time-2" onchange="changeRadio('month')"
-                                           {{(isset($_GET['time']) && $_GET['time'] == 'month') || empty($_GET['time']) ? 'checked' : ''}}
+                                           {{isset($_GET['time']) && $_GET['time'] == 'month' ? 'checked' : ''}}
                                            value="month">&nbsp;Theo tháng
                                 </label>
                                 <input type="month" name="month" class="form-control" id="month"
@@ -114,7 +136,7 @@
                                        value="{{!empty($_GET['week']) ? $_GET['week'] : ''}}">
                             </div>
                         </div>
-                        <div class="col-sm-3" style="height:85px;">
+                        <div class="col-sm-3" style="height:auto;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">
                                     <input type="radio" name="time" id="time-3" onchange="changeRadio('tuychon')"
@@ -125,17 +147,6 @@
                                        value="{{!empty($_GET['from-date']) ? $_GET['from-date'] : ''}}">
                                 <input type="date" name="to-date" class="form-control" id="to-date" title="Đến ngày"
                                        value="{{!empty($_GET['to-date']) ? $_GET['to-date'] : ''}}">
-                            </div>
-                        </div>
-                        <div class="col-md-3" style="height: 80px;">
-                            <div class="form-group input-group-sm">
-                                <label class="radio-inline mr-3">Adsnetowrk &nbsp; &nbsp; </label>
-                                <select name="adsnetworkid" id="adsnetworkid" class="form-control chosen-select">
-                                    <option value="0">--Chọn Adsnetwork--</option>
-                                    @foreach($adsnetwork as $item)
-                                        <option value="{{$item->adsnetworkid}}" {{isset($_GET['adsnetworkid']) && $_GET['adsnetworkid'] == $item->adsnetworkid ? "selected" : ""}}>{{$item->adsnetworkshow}}</option>
-                                    @endforeach
-                                </select>
                             </div>
                         </div>
                         <div class="col-md-3" style="height: 80px;padding-top: 30px;">
@@ -259,6 +270,7 @@
                 @if(isset($_GET['game']) && !empty($_GET['game']))
         var game = '{{$_GET['game']}}';
         var time = '{{isset($_GET['time']) ? $_GET['time'] : ''}}';
+        var ngay = '{{isset($_GET['ngay']) ? $_GET['ngay'] : ''}}';
         var month = '{{isset($_GET['month']) ? $_GET['month'] : ''}}';
         var week = '{{isset($_GET['week']) ? $_GET['week'] : ''}}';
         var fromdate = '{{isset($_GET['from-date']) ? $_GET['from-date'] : ''}}';
@@ -267,6 +279,7 @@
                 @else
         var game = '';
         var time = '';
+        var ngay = '';
         var month = '';
         var week = '';
         var fromdate = '';
@@ -274,25 +287,35 @@
         @endif
 
         $(function () {
-            changeRadio('{{empty($_GET['time']) ? 'month' : $_GET['time']}}');
+            changeRadio('{{empty($_GET['time']) ? 'ngay' : $_GET['time']}}');
         });
 
         function changeRadio(time) {
             if (time == 'week') {
                 $('#week').removeAttr('disabled');
 
+                $('#ngay').attr('disabled', 'disabled');
                 $('#month').attr('disabled', 'disabled');
+                $('#from-date').attr('disabled', 'disabled');
+                $('#to-date').attr('disabled', 'disabled');
+            } else if (time == 'ngay') {
+                $('#ngay').removeAttr('disabled');
+
+                $('#month').attr('disabled', 'disabled');
+                $('#week').attr('disabled', 'disabled');
                 $('#from-date').attr('disabled', 'disabled');
                 $('#to-date').attr('disabled', 'disabled');
             } else if (time == 'month') {
                 $('#month').removeAttr('disabled');
 
+                $('#ngay').attr('disabled', 'disabled');
                 $('#week').attr('disabled', 'disabled');
                 $('#from-date').attr('disabled', 'disabled');
                 $('#to-date').attr('disabled', 'disabled');
             } else if (time == 'tuychon') {
                 $('#month').attr('disabled', 'disabled');
                 $('#week').attr('disabled', 'disabled');
+                $('#ngay').attr('disabled', 'disabled');
 
                 $('#from-date').removeAttr('disabled');
                 $('#to-date').removeAttr('disabled');
@@ -307,7 +330,15 @@
                     url: "{{route('get-overall')}}",
                     //async: false,
                     dataType: "json",
-                    data: {month: month, game: game, time: time, week: week, fromdate: fromdate, todate: todate},
+                    data: {
+                        month: month,
+                        game: game,
+                        time: time,
+                        week: week,
+                        fromdate: fromdate,
+                        todate: todate,
+                        ngay: ngay
+                    },
                     type: "GET",
                     success: function (data) {
                         $('#divloadoverall').html('');
@@ -321,13 +352,29 @@
                                 var profit = performance / value['cost'] * 100;
                                 profit = Math.round(profit * 100) / 100;
                             }
+                            var cost_hien = 0;
+                            var revenue_hien = 0;
+                            if (value["cost"] > 0) {
+                                cost_hien = addcomma(value["cost"]);
+                            }
+                            if (value["revenue"] > 0) {
+                                revenue_hien = addcomma(value["revenue"]);
+                            }
+                            var performance_hien = performance;
+                            if (performance < 0) {
+                                performance_hien = addcomma(performance * -1);
+                                performance_hien = "-" + performance_hien;
+                            }
+                            if (performance > 0) {
+                                performance_hien = addcomma(performance);
+                            }
                             var $tr = $('<tr></tr>');
                             $tr.append('<td>' + dem + '</td>');
                             $tr.append('<td>' + value["name"] + '</td>');
                             $tr.append('<td>' + value["install"] + '</td>');
-                            $tr.append('<td>' + value["cost"] + '</td>');
-                            $tr.append('<td>' + value["revenue"] + '</td>');
-                            $tr.append('<td>' + performance + '</td>');
+                            $tr.append('<td>' + cost_hien + '</td>');
+                            $tr.append('<td>' + revenue_hien + '</td>');
+                            $tr.append('<td>' + performance_hien + '</td>');
                             $tr.append('<td>' + profit + ' %</td>');
 
                             $('#divloadoverall').append($tr);
@@ -349,7 +396,15 @@
                     url: "{{route('get-summary')}}",
                     //async: false,
                     dataType: "text",
-                    data: {month: month, game: game, time: time, week: week, fromdate: fromdate, todate: todate},
+                    data: {
+                        month: month,
+                        game: game,
+                        time: time,
+                        week: week,
+                        fromdate: fromdate,
+                        todate: todate,
+                        ngay: ngay
+                    },
                     type: "GET",
                     success: function (data) {
                         $('#divloadsummary').html(data);
@@ -398,6 +453,7 @@
                     //async: false,
                     dataType: "text",
                     data: {
+                        ngay: ngay,
                         month: month,
                         game: game,
                         time: time,
@@ -430,6 +486,11 @@
 
             if ($('#time-1').is(':checked') === true && $('#week').val() == '') {
                 makeAlertright('Vui lòng chọn Tuần.', 3000);
+                return;
+            }
+
+            if ($('#time-0').is(':checked') === true && $('#ngay').val() == '') {
+                makeAlertright('Vui lòng chọn Ngày.', 3000);
                 return;
             }
 

@@ -10,6 +10,7 @@ use App\Model\reportcountry;
 use App\Model\reportdata;
 use App\Model\reportgame;
 use App\Model\settingcountry;
+use App\Model\timeupdatedata;
 use Illuminate\Http\Request;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -20,10 +21,21 @@ class MarketingController extends Controller
 	{
 		set_time_limit(3600);
 
+		$timeupdatedata_obj = new timeupdatedata();
+		$timeupdatedata_obj->insertTimeUpdate();
+
 		$datetoday = date('Y-m-d');
 		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
 		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
 		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
+
+		$arr_date = array();
+		//$arr_date[] = $ngay_hom_truoc_kia;
+		$arr_date[] = $ngay_hom_truoc;
+		$arr_date[] = $ngay_hom_qua;
+
+		$arr_date2 = array();
+		$arr_date2[] = $ngay_hom_qua;
 
 		$game_obj = new game();
 		$games = $game_obj->getListGame();
@@ -37,10 +49,56 @@ class MarketingController extends Controller
 
 		/*IronSource*/
 		$ironsource_obj = new IronsourceController();
-		$ironsource_obj->insertIronsource($ngay_hom_truoc_kia, $games, $arr_adsnetworks);
-		$ironsource_obj->insertIronsource($ngay_hom_truoc, $games, $arr_adsnetworks);
-		$ironsource_obj->insertIronsource($ngay_hom_qua, $games, $arr_adsnetworks);
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
+
+		/*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords($arr_date2);
+		/*END Adwords*/
+
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date2);
+		/*END Unity*/
+
+		return 1;
+	}
+
+	public function getDataMarketingDate($date)
+	{
+		set_time_limit(3600);
+
+		$timeupdatedata_obj = new timeupdatedata();
+		$timeupdatedata_obj->insertTimeUpdate();
+
+		$arr_date = array();
+		$arr_date[] = $date;
+
+		$game_obj = new game();
+		$games = $game_obj->getListGame();
+
+		$adsnetworks_obj = new adsnetworks();
+		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
+		$arr_adsnetworks = [];
+		foreach ($adsnetworks as $item) {
+			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
+		}
+
+		/*IronSource*/
+		$ironsource_obj = new IronsourceController();
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+		/*END IronSource*/
+
+		/*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords($arr_date);
+		/*END Adwords*/
+
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date);
+		/*END Unity*/
 
 		return 1;
 	}
@@ -49,7 +107,8 @@ class MarketingController extends Controller
 	{
 		$input = $request->all();
 		if (isset($input['capnhatdulieu'])) {
-			$this->getDataMarketing();
+		    $date = $input['date'];
+			$this->getDataMarketingDate($date);
 		}
 
 		return view('marketing.capnhatdulieu');
@@ -378,7 +437,7 @@ class MarketingController extends Controller
 					?>
                     </tbody>
                     <tfoot>
-                    <tr>
+                    <tr class="cltr">
                         <th>SUM</th>
                         <th><?= number_format($sum_cost_all) ?></th>
                         <th><?= number_format($sum_revenue_all) ?></th>
@@ -462,9 +521,9 @@ class MarketingController extends Controller
 
 		?>
 		<?php
-        $demtuan = 0;
+		$demtuan = 0;
 		for ($tuan = $tuandau; $tuan <= $tuancuoi; $tuan++) {
-		    $demtuan++;
+			$demtuan++;
 			$dto = new DateTime();
 			$dto->setISODate($nam, $tuan);
 			$datedau_form = $dto->format('Y-m-d');
@@ -519,13 +578,17 @@ class MarketingController extends Controller
 							$end = new DateTime($datedau_to);
 							for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
 								$date = $i->format("Y-m-d");
-								if ($date < $ngaydauthang || $date > $ngaycuoithang || $date > $datetoday) {
+								$cltd = '';
+								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
+									$cost = '';
+									$cltd = 'cltr';
+								} elseif ($date > $datetoday) {
 									$cost = '';
 								} else {
 									$cost = number_format($arr_sumall[$date]['cost']);
 								}
 								?>
-                                <td><?= $cost ?></td>
+                                <td class="<?= $cltd ?>"><?= $cost ?></td>
 								<?php
 							}
 							?>
@@ -538,13 +601,17 @@ class MarketingController extends Controller
 							$end = new DateTime($datedau_to);
 							for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
 								$date = $i->format("Y-m-d");
-								if ($date < $ngaydauthang || $date > $ngaycuoithang || $date > $datetoday) {
+								$cltd = '';
+								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
+									$revenue = '';
+									$cltd = 'cltr';
+								} elseif ($date > $datetoday) {
 									$revenue = '';
 								} else {
 									$revenue = number_format($arr_sumall[$date]['revenue']);
 								}
 								?>
-                                <td><?= $revenue ?></td>
+                                <td class="<?= $cltd ?>"><?= $revenue ?></td>
 								<?php
 							}
 							?>
@@ -557,13 +624,17 @@ class MarketingController extends Controller
 							$end = new DateTime($datedau_to);
 							for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
 								$date = $i->format("Y-m-d");
-								if ($date < $ngaydauthang || $date > $ngaycuoithang || $date > $datetoday) {
+								$cltd = '';
+								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
+									$install = '';
+									$cltd = 'cltr';
+								} elseif ($date > $datetoday) {
 									$install = '';
 								} else {
 									$install = number_format($arr_sumall[$date]['install']);
 								}
 								?>
-                                <td><?= $install ?></td>
+                                <td class="<?= $cltd ?>"><?= $install ?></td>
 								<?php
 							}
 							?>
@@ -576,7 +647,11 @@ class MarketingController extends Controller
 							$end = new DateTime($datedau_to);
 							for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
 								$date = $i->format("Y-m-d");
-								if ($date < $ngaydauthang || $date > $ngaycuoithang || $date > $datetoday) {
+								$cltd = '';
+								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
+									$performance = '';
+									$cltd = 'cltr';
+								} elseif ($date > $datetoday) {
 									$performance = '';
 								} else {
 									$cost = $arr_sumall[$date]['cost'];
@@ -584,7 +659,7 @@ class MarketingController extends Controller
 									$performance = number_format($revenue - $cost);
 								}
 								?>
-                                <td><?= $performance ?></td>
+                                <td class="<?= $cltd ?>"><?= $performance ?></td>
 								<?php
 							}
 							?>
@@ -597,7 +672,11 @@ class MarketingController extends Controller
 							$end = new DateTime($datedau_to);
 							for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
 								$date = $i->format("Y-m-d");
-								if ($date < $ngaydauthang || $date > $ngaycuoithang || $date > $datetoday) {
+								$cltd = '';
+								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
+									$profit = '';
+									$cltd = 'cltr';
+								} elseif ($date > $datetoday) {
 									$profit = '';
 								} else {
 									$cost = $arr_sumall[$date]['cost'];
@@ -611,7 +690,7 @@ class MarketingController extends Controller
 									$profit .= ' %';
 								}
 								?>
-                                <td><?= $profit ?></td>
+                                <td class="<?= $cltd ?>"><?= $profit ?></td>
 								<?php
 							}
 							?>
@@ -698,7 +777,8 @@ class MarketingController extends Controller
 			$sum_profit = 0;
 		} else {
 			$sum_profit = round($sum_performance / $sum_cost * 100, 2);
-		}*/
+		}
+		$sum_profit .= " %";*/
 		if (empty($sum_install)) {
 			$sum_cpiavg = 0;
 		} else {
@@ -720,7 +800,7 @@ class MarketingController extends Controller
                        cellspacing="0">
                     <thead>
                     <tr>
-                        <th colspan="8"><?= $country_name ?></th>
+                        <th colspan="11"><?= $country_name ?></th>
                     </tr>
                     <tr>
                         <th style="width: 100px;">Date</th>
@@ -731,9 +811,9 @@ class MarketingController extends Controller
                         <th>CTR</th>
                         <th>CR</th>
                         <th>Install</th>
-                        <!-- <th>Revenue</th>
-						 <th>Performance</th>
-						 <th>Profit rate</th>-->
+                        <!--<th>Revenue</th>
+                        <th>Performance</th>
+                        <th>Profit rate</th>-->
                     </tr>
                     <tr>
                         <th>Total</th>
@@ -744,9 +824,9 @@ class MarketingController extends Controller
                         <th><?= $ctr ?></th>
                         <th><?= $cr ?></th>
                         <th><?= number_format($sum_install) ?></th>
-                        <!--<th><?/*= number_format($sum_revenue) */ ?></th>
-                        <th><?/*= number_format($sum_performance) */ ?></th>
-                        <th><?/*= $sum_profit */ ?> %</th>-->
+                        <!--<th><?/*= number_format($sum_revenue) */?></th>
+                        <th><?/*= number_format($sum_performance) */?></th>
+                        <th><?/*= $sum_profit */?> </th>-->
                     </tr>
                     </thead>
                     <tbody>
@@ -769,8 +849,8 @@ class MarketingController extends Controller
 						//$revenue = $this->checkEmptyNum($arr_all[$date]['revenue']);
 						$cost = $this->checkEmptyNum($arr_all[$date]['cost']);
 						$install = $this->checkEmptyNum($arr_all[$date]['install']);
-						/*$performance = $revenue - $cost;
-						if (empty($cost)) {
+						//$performance = $revenue - $cost;
+						/*if (empty($cost)) {
 							$profit = 0;
 						} else {
 							$profit = round($performance / $cost * 100, 2);
@@ -791,9 +871,9 @@ class MarketingController extends Controller
                             <td><?= $this->checkValueDate($arr_all[$date]['ctr'], $date, $datetoday) ?></td>
                             <td><?= $this->checkValueDate($arr_all[$date]['cr'], $date, $datetoday) ?></td>
                             <td><?= $this->checkValueDate(number_format($install), $date, $datetoday) ?></td>
-                            <!--<td><?/*= $this->checkValueDate(number_format($revenue), $date, $datetoday) */ ?></td>
-                            <td><?/*= $this->checkValueDate(number_format($performance), $date, $datetoday) */ ?></td>
-                            <td><?/*= $this->checkValueDate($profit, $date, $datetoday) */ ?></td>-->
+                            <!--<td><?/*= $this->checkValueDate(number_format($revenue), $date, $datetoday) */?></td>
+                            <td><?/*= $this->checkValueDate(number_format($performance), $date, $datetoday) */?></td>
+                            <td><?/*= $this->checkValueDate($profit, $date, $datetoday) */?></td>-->
                         </tr>
 						<?php
 					}
@@ -849,6 +929,13 @@ class MarketingController extends Controller
 				if (isset($input['month']) && !empty($input['month'])) {
 					$date['from'] = date('Y-m-d', strtotime('first day of this month', strtotime($input['month'])));
 					$date['to'] = date('Y-m-d', strtotime('last day of this month', strtotime($input['month'])));
+				}
+
+				break;
+			case "ngay":
+				if (isset($input['ngay']) && !empty($input['ngay'])) {
+					$date['from'] = $input['ngay'];
+					$date['to'] = $input['ngay'];
 				}
 
 				break;

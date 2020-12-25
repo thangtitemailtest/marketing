@@ -197,4 +197,13 @@ class HomeController extends Controller
 		return view('khongcoquyen');
 	}
 
+	public function taoadmin()
+	{
+		$user = new User();
+		$user->name = 'admin';
+		$user->username = 'admin2';
+		$user->password = Hash::make(123456);
+		$user->save();
+	}
+
 }
