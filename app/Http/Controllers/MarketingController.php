@@ -14,6 +14,7 @@ use App\Model\timeupdatedata;
 use Illuminate\Http\Request;
 use DateTime;
 use Illuminate\Support\Facades\Log;
+use Auth;
 
 class MarketingController extends Controller
 {
@@ -47,20 +48,20 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
-		/*IronSource*/
-		$ironsource_obj = new IronsourceController();
-		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
-		/*END IronSource*/
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date2);
+		/*END Unity*/
 
 		/*Adwords*/
 		$adwords_obj = new AdswordController();
 		$adwords_obj->insertAdwords($arr_date2);
 		/*END Adwords*/
 
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date2);
-		/*END Unity*/
+		/*IronSource*/
+		$ironsource_obj = new IronsourceController();
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+		/*END IronSource*/
 
 		return 1;
 	}
@@ -85,20 +86,20 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
-		/*IronSource*/
-		$ironsource_obj = new IronsourceController();
-		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
-		/*END IronSource*/
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date);
+		/*END Unity*/
 
 		/*Adwords*/
 		$adwords_obj = new AdswordController();
 		$adwords_obj->insertAdwords($arr_date);
 		/*END Adwords*/
 
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date);
-		/*END Unity*/
+		/*IronSource*/
+		$ironsource_obj = new IronsourceController();
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+		/*END IronSource*/
 
 		return 1;
 	}
@@ -107,7 +108,7 @@ class MarketingController extends Controller
 	{
 		$input = $request->all();
 		if (isset($input['capnhatdulieu'])) {
-		    $date = $input['date'];
+			$date = $input['date'];
 			$this->getDataMarketingDate($date);
 		}
 
@@ -120,8 +121,10 @@ class MarketingController extends Controller
 		$game_obj = new game();
 		$games = $game_obj->getListGame();
 		$country = $country_obj->getListCountry();
+		$permission = json_decode(Auth::user()->permission, true);
+		if (empty($permission)) $permission[0] = '';
 
-		return view('marketing.caidatnuoc', compact('country', 'games'));
+		return view('marketing.caidatnuoc', compact('country', 'games', 'permission'));
 	}
 
 	public function getCountrygame(Request $request)
@@ -172,8 +175,10 @@ class MarketingController extends Controller
 		$games = $game_obj->getListGame();
 		$adsnetwork_obj = new adsnetworks();
 		$adsnetwork = $adsnetwork_obj->getListAdsGroup();
+		$permission = json_decode(Auth::user()->permission, true);
+		if (empty($permission)) $permission[0] = '';
 
-		return view('marketing.themdulieu', compact('games', 'adsnetwork'));
+		return view('marketing.themdulieu', compact('games', 'adsnetwork', 'permission'));
 	}
 
 	public function getBangthemdulieu(Request $request)
@@ -311,8 +316,10 @@ class MarketingController extends Controller
 		}
 		$game_obj = new game();
 		$game = $game_obj->getListGame();
+		$permission = json_decode(Auth::user()->permission, true);
+		if (empty($permission)) $permission[0] = '';
 
-		return view('marketing.thongkedulieutheoquocgia', compact('adsnetwork', 'count_adsnetwork', 'country', 'game'));
+		return view('marketing.thongkedulieutheoquocgia', compact('adsnetwork', 'count_adsnetwork', 'country', 'game', 'permission'));
 	}
 
 	public function getOverall(Request $request)
@@ -824,9 +831,9 @@ class MarketingController extends Controller
                         <th><?= $ctr ?></th>
                         <th><?= $cr ?></th>
                         <th><?= number_format($sum_install) ?></th>
-                        <!--<th><?/*= number_format($sum_revenue) */?></th>
-                        <th><?/*= number_format($sum_performance) */?></th>
-                        <th><?/*= $sum_profit */?> </th>-->
+                        <!--<th><?/*= number_format($sum_revenue) */ ?></th>
+                        <th><?/*= number_format($sum_performance) */ ?></th>
+                        <th><?/*= $sum_profit */ ?> </th>-->
                     </tr>
                     </thead>
                     <tbody>
@@ -871,9 +878,9 @@ class MarketingController extends Controller
                             <td><?= $this->checkValueDate($arr_all[$date]['ctr'], $date, $datetoday) ?></td>
                             <td><?= $this->checkValueDate($arr_all[$date]['cr'], $date, $datetoday) ?></td>
                             <td><?= $this->checkValueDate(number_format($install), $date, $datetoday) ?></td>
-                            <!--<td><?/*= $this->checkValueDate(number_format($revenue), $date, $datetoday) */?></td>
-                            <td><?/*= $this->checkValueDate(number_format($performance), $date, $datetoday) */?></td>
-                            <td><?/*= $this->checkValueDate($profit, $date, $datetoday) */?></td>-->
+                            <!--<td><?/*= $this->checkValueDate(number_format($revenue), $date, $datetoday) */ ?></td>
+                            <td><?/*= $this->checkValueDate(number_format($performance), $date, $datetoday) */ ?></td>
+                            <td><?/*= $this->checkValueDate($profit, $date, $datetoday) */ ?></td>-->
                         </tr>
 						<?php
 					}

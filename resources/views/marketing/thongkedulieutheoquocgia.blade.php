@@ -87,7 +87,9 @@
                                 <select name="game" id="game" class="form-control chosen-select">
                                     <option value="0">--Chọn Game--</option>
                                     @foreach($game as $item)
-                                        <option value="{{$item->gameid}}" {{isset($_GET['game']) && $_GET['game'] == $item->gameid ? "selected" : ""}}>{{$item->gamename}}</option>
+                                        @if(in_array($item->gameid,$permission) || $permission[0] == 'admin')
+                                            <option value="{{$item->gameid}}" {{isset($_GET['game']) && $_GET['game'] == $item->gameid ? "selected" : ""}}>{{$item->gamename}}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>

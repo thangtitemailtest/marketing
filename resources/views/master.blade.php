@@ -110,41 +110,29 @@
             </li>
         @endif
 
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('get-themdulieu')}}">
-                <i class="fas fa-plus"></i>
-                <span>Thêm dữ liệu</span></a>
-        </li>
+        @if(in_array('edit',$permission) || $permission[0] == 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('get-themdulieu')}}">
+                    <i class="fas fa-plus"></i>
+                    <span>Thêm dữ liệu</span></a>
+            </li>
+        @endif
+
         <li class="nav-item">
             <a class="nav-link" href="{{route('get-thongkedulieutheoquocgia')}}">
                 <i class="fas fa-globe"></i>
                 <span>Thống kê dữ liệu theo<br>quốc gia</span></a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="{{route('get-caidatnuoc')}}">
-                <i class="fas fa-globe"></i>
-                <span>Cài đặt quốc gia</span></a>
-        </li>
 
-    {{--<li class="nav-item">
-        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages13"
-           aria-expanded="true" aria-controls="collapsePages">
-            <i class="fab fa-first-order"></i>
-            <span>Reports</span>
-        </a>
-        <div id="collapsePages13" class="collapse" aria-labelledby="headingPages" data-parent="">
-            <div class="bg-white py-2 collapse-inner rounded">
 
-                --}}{{--<a class="collapse-item" href="{{url('report')}}">Reports</a>--}}{{--
-                @if(in_array('report/userconlaisaulevel',$permission) || $permission[0] == 'admin')
-                    <a class="collapse-item" href="{{route('get-userconlaisaulevel')}}">Lượng user còn lại sau<br>các
-                        level</a>
-                @endif
-            </div>
-        </div>
-    </li>--}}
+        @if(in_array('edit',$permission) || $permission[0] == 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('get-caidatnuoc')}}">
+                    <i class="fas fa-globe"></i>
+                    <span>Cài đặt quốc gia</span></a>
+            </li>
+        @endif
 
-    <!-- Divider -->
         <hr class="sidebar-divider d-none d-md-block">
 
     </ul>

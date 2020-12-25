@@ -41,22 +41,34 @@
                             <table class="table table-bordered" width="100%" cellspacing="0" id="dataTable">
                                 <thead>
                                 <tr>
-                                    <th>Id</th>
-                                    <th>url</th>
+                                    <th>STT</th>
                                     <th>Name</th>
                                     <th>Action<br><input type="checkbox" id="checkall" onclick="clickCheckall()"></th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
-                                @foreach($listModule as $key => $item)
+                                <tr>
+                                    <td>1</td>
+                                    <td>Edit</td>
+                                    <td style="text-align: center">
+                                        <input type="checkbox" name="checkname[]" class="checkall"
+                                               {{in_array('edit',$permission) ? "checked" : ""}} value="edit">
+                                    </td>
+                                </tr>
+								<?php
+								$dem = 1;
+								?>
+                                @foreach($listGame as $key => $item)
+									<?php
+									$dem++;
+									?>
                                     <tr>
-                                        <td>{{$item->id}}</td>
-                                        <td>{{$item->url}}</td>
-                                        <td>{{$item->name}}</td>
+                                        <td>{{$dem}}</td>
+                                        <td>{{$item->gamename}}</td>
                                         <td style="text-align: center">
                                             <input type="checkbox" name="checkname[]" class="checkall"
-                                                   {{in_array($item->url,$permission) ? "checked" : ""}} value="{{$item->url}}">
+                                                   {{in_array($item->gameid,$permission) ? "checked" : ""}} value="{{$item->gameid}}">
                                         </td>
                                     </tr>
                                 @endforeach
@@ -77,7 +89,7 @@
         </a>
     </div>
 
-     <script>
+    <script>
         function clickCheckall() {
             if ($('#checkall').is(':checked')) {
                 $('.checkall').prop('checked', true);

@@ -47,8 +47,6 @@ class UnityadsController extends Controller
 		$api_key = "5f108ba46b7024d40dbb478ba4f062213e3e2115471bca59bb8fc65b0c56122e";
 		$organization_id = "5c9b1c210d7ede00277e9950";
 
-		$arr_date = ['2020-12-23', '2020-12-24'];
-
 		$games = new game();
 		$arr_game = $games->getListGameArrayPakage();
 
@@ -59,7 +57,7 @@ class UnityadsController extends Controller
 
 
 		foreach ($arr_date as $date) {
-			$timeupdatedata_obj->insertTimeUpdate($date, 'unity', 'ok');
+			$timeupdatedata_obj->insertTimeUpdate($date, 'unity', 'ok vao');
 
 			$start = $date . "T00:00:00";
 			$end = $date . "T23:59:59";
@@ -105,6 +103,8 @@ class UnityadsController extends Controller
 					$reportdata->insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install, $cpi);
 				}
 			}
+
+			$timeupdatedata_obj->insertTimeUpdate($date, 'unity', 'ok xong');
 
 			sleep(4);
 		}

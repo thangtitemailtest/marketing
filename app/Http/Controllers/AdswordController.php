@@ -113,7 +113,7 @@ class AdswordController extends Controller
 		$adsnetworkid = 2;
 
 		foreach ($arr_date as $date) {
-			$timeupdatedata_obj->insertTimeUpdate($date, 'adwords', 'ok');
+			$timeupdatedata_obj->insertTimeUpdate($date, 'adwords', 'ok vao');
 
 			$date_query = date('Ymd', strtotime($date));
 
@@ -175,6 +175,8 @@ class AdswordController extends Controller
 					}
 				}
 			}
+
+			$timeupdatedata_obj->insertTimeUpdate($date, 'adwords', 'ok xong');
 		}
 
 		return 1;

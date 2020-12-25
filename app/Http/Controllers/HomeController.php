@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Model\game;
 use App\Model\listmodule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -169,10 +170,10 @@ class HomeController extends Controller
 		if (empty($permission)) {
 			$permission = [];
 		}
-		$module = new listmodule();
-		$listModule = $module->getListmodule()->get();
+		$games_obj = new game();
+		$listGame = $games_obj->getListGame();
 
-		return view('admin.phanquyenuser', compact('id', 'listModule', 'permission'));
+		return view('admin.phanquyenuser', compact('id', 'listGame', 'permission'));
 	}
 
 	public function postPhanquyenuser(Request $request)

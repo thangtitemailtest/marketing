@@ -83,7 +83,7 @@ class IronsourceController extends Controller
 						$file_name_error = str_replace("report", "report" . date('YmdHis'), $file_name);
 						$dir_error = getcwd() . "/adsironsource/errorfile/" . $file_name_error;
 						copy($dir, $dir_error);
-						$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai');
+						$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai 0- ' . $data[7]);
 						return json_encode(array('status' => 0, 'message' => 'country sai'));
 					}
 				}
@@ -94,7 +94,7 @@ class IronsourceController extends Controller
 						$revenue = $data[11];
 
 						if (strlen($country) > 2) {
-							$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai');
+							$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai ' . $country);
 							return json_encode(array('status' => 0, 'message' => 'country sai'));
 						}
 
@@ -129,7 +129,7 @@ class IronsourceController extends Controller
 		$timeupdatedata_obj = new timeupdatedata();
 
 		foreach ($arr_date as $date) {
-			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok');
+			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok vao');
 			foreach ($games as $item) {
 				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
 					$gameid = $item->gameid;
@@ -150,6 +150,7 @@ class IronsourceController extends Controller
 					}
 				}
 			}
+			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok xong');
 		}
 
 		return 1;
@@ -161,7 +162,7 @@ class IronsourceController extends Controller
 		$datetoday = date('Y-m-d');
 		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
 		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
-		$date = '2020-12-22';
+		$date = '2020-12-24';
 
 		$adsnetworks_obj = new adsnetworks();
 		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();

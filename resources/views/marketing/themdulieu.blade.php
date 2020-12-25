@@ -37,7 +37,9 @@
                                         onchange="changeGame()">
                                     <option value="0">--Chọn Game--</option>
                                     @foreach($games as $item)
-                                        <option value="{{$item->gameid}}">{{$item->gamename}}</option>
+                                        @if(in_array($item->gameid,$permission) || $permission[0] == 'admin')
+                                            <option value="{{$item->gameid}}">{{$item->gamename}}</option>
+                                        @endif
                                     @endforeach
                                 </select>
                             </div>
