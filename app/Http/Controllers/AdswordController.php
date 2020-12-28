@@ -73,8 +73,10 @@ class AdswordController extends Controller
 				if ($obj) {
 					foreach ($obj as $item_c) {
 						$donvitien = $item_c->currency;
-						$cost = round($item_c->cost / 1000000, 2);
-						$budget = round($item_c->budget / 1000000, 2);
+						$cost = is_numeric($item_c->cost);
+						$cost = round($cost / 1000000, 2);
+						$budget = is_numeric($item_c->budget);
+						$budget = round($budget / 1000000, 2);
 						if ($donvitien == 'USD') {
 							$cost = $cost * config('tygia.cost');
 							$budget = $budget . " $";
@@ -158,8 +160,10 @@ class AdswordController extends Controller
 						->getAsObj()->result;
 					foreach ($obj as $item_c) {
 						$donvitien = $item_c->currency;
-						$cost = round($item_c->cost / 1000000, 2);
-						$budget = round($item_c->budget / 1000000, 2);
+						$cost = is_numeric($item_c->cost) ? $item_c->cost : 0;
+						$cost = round($cost / 1000000, 2);
+						$budget = is_numeric($item_c->budget) ? $item_c->budget : 0;
+						$budget = round($budget / 1000000, 2);
 						if ($donvitien == 'USD') {
 							$cost = $cost * config('tygia.cost');
 							$budget = $budget . " $";

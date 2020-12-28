@@ -48,20 +48,20 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date2);
-		/*END Unity*/
-
-		/*Adwords*/
-		$adwords_obj = new AdswordController();
-		$adwords_obj->insertAdwords($arr_date2);
-		/*END Adwords*/
-
 		/*IronSource*/
 		$ironsource_obj = new IronsourceController();
 		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
+
+        /*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords($arr_date2);
+		/*END Adwords*/
+
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date2);
+		/*END Unity*/
 
 		return 1;
 	}
@@ -86,20 +86,20 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date);
-		/*END Unity*/
-
-		/*Adwords*/
-		$adwords_obj = new AdswordController();
-		$adwords_obj->insertAdwords($arr_date);
-		/*END Adwords*/
-
 		/*IronSource*/
 		$ironsource_obj = new IronsourceController();
 		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
+
+        /*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords($arr_date);
+		/*END Adwords*/
+
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date);
+		/*END Unity*/
 
 		return 1;
 	}

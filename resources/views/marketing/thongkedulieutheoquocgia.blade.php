@@ -506,10 +506,10 @@
                 return;
             }
 
-            if ($('#adsnetworkid').val() == 0) {
+            /*if ($('#adsnetworkid').val() == 0) {
                 makeAlertright("Vui lòng chọn Adsnetwork", 2000);
                 return;
-            }
+            }*/
 
             $('.btn').attr('disabled', 'disabled');
             $('#divdoi').show();

@@ -77,9 +77,9 @@ class UnityadsController extends Controller
 					$gamename = $item[3];
 					$countrycode = $item[4];
 					$install = $item[8];
-					$cost = $item[9];
-					$cr = $item[10];
-					$ctr = $item[11];
+					$cost = is_numeric($item[9]) ? $item[9] : 0;
+					$cr = is_numeric($item[10]) ? $item[10] : 0;
+					$ctr = is_numeric($item[11]) ? $item[11] : 0;
 					$cpi = $item[13];
 					$budget = '';
 
