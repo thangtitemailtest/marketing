@@ -2,6 +2,24 @@
 @extends('master')
 @section('noidung')
 
+    <style>
+        th {
+            position: sticky;
+            top: 0;
+            background: #ccc;
+        }
+
+        .cltien {
+            position: sticky;
+            top: 30px;
+        }
+
+        .cltien2 {
+            position: sticky;
+            top: 61px;
+        }
+    </style>
+
     <div class="container-fluid">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
@@ -27,7 +45,8 @@
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">Ngày</label>
-                                <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d')}}">
+                                <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d')}}"
+                                       onchange="changeAds()">
                             </div>
                         </div>
                         <div class="col-md-3" style="height: 80px;">
@@ -47,7 +66,8 @@
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">Adsnetwork</label>
-                                <select name="adsnetwork" id="adsnetwork" class="form-control chosen-select">
+                                <select name="adsnetwork" id="adsnetwork" class="form-control chosen-select"
+                                        onchange="changeAds()">
                                     <option value="0">--Chọn Adsnetwork--</option>
                                     @foreach($adsnetwork as $item)
                                         <option value="{{$item->adsnetworkid}}">{{$item->adsnetworkshow}}</option>
@@ -118,10 +138,91 @@
                     type: "GET",
                     success: function (data) {
                         $('#divbang').html(data);
+
+                        changeAds();
                     },
                     error: function () {
                     }
                 });
+            }
+        }
+
+        function changeAds() {
+            var gameid = $('#game').val();
+            var adsnetwork = $('#adsnetwork').val();
+            var date = $('#date').val();
+
+            if (adsnetwork != 0 && gameid != 0 && date != '') {
+                $('.clearinput').val('');
+                $.ajax({
+                    url: "{{route('get-bangthemdulieu-thongsoads')}}",
+                    //async: false,
+                    dataType: "json",
+                    data: {gameid: gameid, adsnetwork: adsnetwork, date: date},
+                    type: "GET",
+                    success: function (data) {
+                        $.each(data, function (key, value) {
+                            $('#budget' + key).val(value['budget']);
+                            $('#costvnd' + key).val(value['cost']);
+                            $('#costusd' + key).val(value['costusd']);
+                            $('#cpitarget' + key).val(value['cpitarget']);
+                            $('#ctr' + key).val(value['ctr']);
+                            $('#cr' + key).val(value['cr']);
+                            $('#install' + key).val(value['install']);
+                            $('#revenuevnd' + key).val(value['revenue']);
+                            $('#revenueusd' + key).val(value['revenueusd']);
+                        });
+
+                        tinhsum();
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+
+        function tinhsum() {
+            var arrcountry = JSON.parse($('#arrcountry').val());
+            var sumcostusd = 0;
+            var sumcostvnd = 0;
+            var sumrevenueusd = 0;
+            var sumrevenuevnd = 0;
+            $.each(arrcountry, function (key, value) {
+                var costusd = rmcomma($('#costusd' + value).val()) * 1;
+                var costvnd = rmcomma($('#costvnd' + value).val()) * 1;
+                var revenueusd = rmcomma($('#revenueusd' + value).val()) * 1;
+                var revenuevnd = rmcomma($('#revenuevnd' + value).val()) * 1;
+
+                sumcostusd += costusd;
+                sumcostvnd += costvnd;
+                sumrevenueusd += revenueusd;
+                sumrevenuevnd += revenuevnd;
+            });
+
+            if (sumcostusd == 0){
+                $('#sumcostusd').html(0);
+            } else{
+                sumcostusd = Math.round(sumcostusd * 100) / 100;
+                $('#sumcostusd').html(addcomma(sumcostusd));
+            }
+
+            if (sumcostvnd == 0){
+                $('#sumcostvnd').html(0);
+            } else{
+                $('#sumcostvnd').html(addcomma(sumcostvnd));
+            }
+
+            if (sumrevenueusd == 0){
+                $('#sumrevenueusd').html(0);
+            } else{
+                sumrevenueusd = Math.round(sumrevenueusd * 100) / 100;
+                $('#sumrevenueusd').html(addcomma(sumrevenueusd));
+            }
+
+            if (sumrevenuevnd == 0){
+                $('#sumrevenuevnd').html(0);
+            } else{
+                $('#sumrevenuevnd').html(addcomma(sumrevenuevnd));
             }
         }
 
@@ -134,11 +235,24 @@
                 costvnd = Math.round(costvnd);
                 $('#costvnd' + code).val(addcomma(costvnd));
             }
+
+            tinhsum();
         }
 
         function changeCostVnd(ele, code) {
-            addcomma1(ele);
             $('#costusd' + code).val('');
+            var costvnd = rmcomma($('#costvnd' + code).val());
+            var costusd = costvnd / {{config('tygia.cost')}};
+            if (costusd == 0 || costusd == '') {
+                $('#costusd' + code).val(costusd);
+            } else {
+                costusd = Math.round(costusd * 100) / 100;
+                $('#costusd' + code).val(addcomma(costusd));
+            }
+
+            addcomma1(ele);
+
+            tinhsum();
         }
 
         function changeRevenueUsd(code) {
@@ -150,11 +264,24 @@
                 revenuevnd = Math.round(revenuevnd);
                 $('#revenuevnd' + code).val(addcomma(revenuevnd));
             }
+
+            tinhsum();
         }
 
         function changeRevenueVnd(ele, code) {
-            addcomma1(ele);
             $('#revenueusd' + code).val('');
+            var revenuevnd = rmcomma($('#revenuevnd' + code).val());
+            var revenueusd = revenuevnd / {{config('tygia.revenue')}};
+            if (revenueusd == 0 || revenueusd == '') {
+                $('#revenueusd' + code).val(revenueusd);
+            } else {
+                revenueusd = Math.round(revenueusd * 100) / 100;
+                $('#revenueusd' + code).val(addcomma(revenueusd));
+            }
+
+            addcomma1(ele);
+
+            tinhsum();
         }
 
         function clickXacNhan() {

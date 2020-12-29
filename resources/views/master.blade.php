@@ -65,6 +65,10 @@
         .collapse-item {
             padding-left: 5px !important;
         }
+
+        body, .table, .table-hover tbody tr:hover {
+            color: #000 !important;
+        }
     </style>
 </head>
 

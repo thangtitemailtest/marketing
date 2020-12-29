@@ -8,7 +8,7 @@
             padding: 5px !important;
         }
 
-        #taboverall .loader {
+        #divloadoverall .loader {
             position: relative;
             left: 400%;
         }
@@ -22,6 +22,18 @@
             font-size: 12px;
             line-height: 1.5;
             border-radius: 3px;
+        }
+
+        #table_overall_filter {
+            float: right;
+        }
+
+        #table_overall_length label{
+            display: inline;
+        }
+
+        #table_overall_length label select{
+            width: 100px;
         }
     </style>
     <style>
@@ -195,7 +207,7 @@
                                         </button>
                                     </div>
                                     <div class="col-md-12 table-responsive">
-                                        <table class="table table-bordered table-hover" width="100%"
+                                        <table class="table table-bordered table-hover" width="100%" id="table_overall"
                                                cellspacing="0">
                                             <thead>
                                             <tr>
@@ -206,6 +218,7 @@
                                                 <th>Revenue</th>
                                                 <th>Performance</th>
                                                 <th>Profit Rate</th>
+                                                <th></th>
                                             </tr>
                                             </thead>
                                             <tbody id="divloadoverall">
@@ -213,6 +226,10 @@
                                             </tbody>
                                         </table>
                                     </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-12  table-responsive" id="divloadoverallcountry"></div>
                                 </div>
                             </div>
                             <div class="tab-pane fade" id="tabsummary" role="tabpanel">
@@ -242,6 +259,11 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="row" id="divload3"
+                     style="{{(isset($_GET['game']) && empty($_GET['game'])) ? "" : "display: none"}}">
+                    <div class="col-md-12 table-responsive" id="divbang3" style="margin-top: 20px"></div>
+                </div>
             </div>
         </div>
 
@@ -269,7 +291,8 @@
 
         $('.chosen-select').chosen();
 
-                @if(isset($_GET['game']) && !empty($_GET['game']))
+                @if(isset($_GET['game']))
+                @if(!empty($_GET['game']))
         var game = '{{$_GET['game']}}';
         var time = '{{isset($_GET['time']) ? $_GET['time'] : ''}}';
         var ngay = '{{isset($_GET['ngay']) ? $_GET['ngay'] : ''}}';
@@ -286,6 +309,8 @@
         var week = '';
         var fromdate = '';
         var todate = '';
+        ThongKeGame();
+        @endif
         @endif
 
         $(function () {
@@ -378,8 +403,15 @@
                             $tr.append('<td>' + revenue_hien + '</td>');
                             $tr.append('<td>' + performance_hien + '</td>');
                             $tr.append('<td>' + profit + ' %</td>');
+                            $tr.append('<td><button type="button" class="btn btn-primary btn-xs" onclick="clickXemCountry(\'' + key + '\',\'' + value["name"] + '\')">Xem</button></td>');
 
                             $('#divloadoverall').append($tr);
+                        });
+
+                        $('#table_overall').DataTable({
+                            "pageLength": 10,
+                            "bInfo": false,
+                            //"bLengthChange": false,
                         });
 
                         showoverall = 1;
@@ -388,6 +420,33 @@
                     }
                 });
             }
+        }
+
+        function clickXemCountry(countrycode, countryname) {
+            $('#divloadoverallcountry').html("<div class='loader'></div>");
+            $("html, body").animate({scrollTop: $('#divloadoverallcountry').offset().top}, 1000);
+            $.ajax({
+                url: "{{route('get-overall-country')}}",
+                //async: false,
+                dataType: "text",
+                data: {
+                    month: month,
+                    game: game,
+                    time: time,
+                    week: week,
+                    fromdate: fromdate,
+                    todate: todate,
+                    ngay: ngay,
+                    countrycode: countrycode,
+                    countryname: countryname
+                },
+                type: "GET",
+                success: function (data) {
+                    $('#divloadoverallcountry').html(data);
+                },
+                error: function () {
+                }
+            });
         }
 
         function clickSummary(check = '') {
@@ -447,8 +506,12 @@
         function clickCountry(countrycode, check = '') {
             var showcountry = $('#showcountry' + countrycode).val();
             if (showcountry == 0 || check == 'tailai') {
-                $('#divloadcountry' + countrycode).html("<div class='loader'></div>");
                 var adsnetworkid = $('#adsnetworkid').val();
+                /*if (adsnetworkid == 0) {
+                    makeAlertright("Vui lòng chọn Adsnetwork và Tải lại dữ liệu", 3000);
+                    return;
+                }*/
+                $('#divloadcountry' + countrycode).html("<div class='loader'></div>");
 
                 $.ajax({
                     url: "{{route('get-country')}}",
@@ -479,31 +542,48 @@
             }
         }
 
+        function ThongKeGame() {
+            $('#divbang3').html("<div class='loader'></div>");
+            $.ajax({
+                url: "{{route('get-thongkegame')}}",
+                //async: false,
+                dataType: "text",
+                data: {},
+                type: "GET",
+                success: function (data) {
+                    $('#divbang3').html(data);
+                },
+                error: function () {
+                }
+            });
+        }
+
         function clickXem() {
 
-            if ($('#game').val() == 0) {
-                makeAlertright("Vui lòng chọn Game", 2000);
-                return;
-            }
+            if ($('#game').val() != 0) {
+                /* makeAlertright("Vui lòng chọn Game", 2000);
+                 return;
+             }else {*/
 
-            if ($('#time-1').is(':checked') === true && $('#week').val() == '') {
-                makeAlertright('Vui lòng chọn Tuần.', 3000);
-                return;
-            }
+                if ($('#time-1').is(':checked') === true && $('#week').val() == '') {
+                    makeAlertright('Vui lòng chọn Tuần.', 3000);
+                    return;
+                }
 
-            if ($('#time-0').is(':checked') === true && $('#ngay').val() == '') {
-                makeAlertright('Vui lòng chọn Ngày.', 3000);
-                return;
-            }
+                if ($('#time-0').is(':checked') === true && $('#ngay').val() == '') {
+                    makeAlertright('Vui lòng chọn Ngày.', 3000);
+                    return;
+                }
 
-            if ($('#time-2').is(':checked') === true && $('#month').val() == '') {
-                makeAlertright('Vui lòng chọn Tháng.', 3000);
-                return;
-            }
+                if ($('#time-2').is(':checked') === true && $('#month').val() == '') {
+                    makeAlertright('Vui lòng chọn Tháng.', 3000);
+                    return;
+                }
 
-            if ($('#time-3').is(':checked') === true && ($('#from-date').val() == '' || $('#to-date').val() == '')) {
-                makeAlertright('Vui lòng chọn Từ ngày/Đến ngày.', 3000);
-                return;
+                if ($('#time-3').is(':checked') === true && ($('#from-date').val() == '' || $('#to-date').val() == '')) {
+                    makeAlertright('Vui lòng chọn Từ ngày/Đến ngày.', 3000);
+                    return;
+                }
             }
 
             /*if ($('#adsnetworkid').val() == 0) {

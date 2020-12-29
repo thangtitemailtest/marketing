@@ -36,8 +36,6 @@ Route::middleware('Checklogin')->group(function () {
 	Route::get('/phanquyenuser/{id}', 'HomeController@getPhanquyenuser')->name('get-phanquyenuser');
 
 	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
-	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
-	Route::post('/themdulieu-post', 'MarketingController@postThemdulieu')->name('post-themdulieu');
 
 	/*Report*/
 	Route::group(['prefix' => 'report'], function () {
@@ -47,18 +45,21 @@ Route::middleware('Checklogin')->group(function () {
 });
 
 Route::middleware('Checklogout')->group(function () {
-	//Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
 	Route::get('/themdulieu', 'MarketingController@getThemdulieu')->name('get-themdulieu');
+	Route::post('/themdulieu-post', 'MarketingController@postThemdulieu')->name('post-themdulieu');
 	Route::get('/bangthemdulieu', 'MarketingController@getBangthemdulieu')->name('get-bangthemdulieu');
-	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
+	Route::get('/bangthemdulieuthongsoads', 'MarketingController@getBangthemdulieuThongsoads')->name('get-bangthemdulieu-thongsoads');
 	Route::get('/countrygame', 'MarketingController@getCountrygame')->name('get-countrygame');
+	Route::get('/caidatnuoc', 'MarketingController@getCaidatnuoc')->name('get-caidatnuoc');
 	Route::post('/caidatnuoc-post', 'MarketingController@postCaidatnuoc')->name('post-caidatnuoc');
 	Route::get('/thongkedulieutheoquocgia', 'MarketingController@getThongkedulieutheoquocgia')->name('get-thongkedulieutheoquocgia');
 
 	Route::get('/getoverall', 'MarketingController@getOverall')->name('get-overall');
+	Route::get('/getoverallcountry', 'MarketingController@getOverallCountry')->name('get-overall-country');
 	Route::get('/getsummary', 'MarketingController@getSummary')->name('get-summary');
 	Route::get('/summary-month', 'MarketingController@getSummarymonth')->name('get-summary-month');
 	Route::get('/getcountry', 'MarketingController@getCountry')->name('get-country');
+	Route::get('/thongkegame', 'MarketingController@getThongkegame')->name('get-thongkegame');
 });
 
 

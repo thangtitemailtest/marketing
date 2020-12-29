@@ -29,6 +29,19 @@ class game extends Model
 		return $arr_game;
 	}
 
+	public function getListGameArrayGameid()
+	{
+		$games = $this->getListGame();
+		$arr_game = [];
+		foreach ($games as $item) {
+			if (!empty($item->gameid)) {
+				$arr_game[$item->gameid] = $item->gamename;
+			}
+		}
+
+		return $arr_game;
+	}
+
 	public function getGameidDesc()
 	{
 		$game_obj = $this::select('gameid')->orderBy('gameid', 'DESC')->first();

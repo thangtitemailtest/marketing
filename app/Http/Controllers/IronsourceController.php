@@ -91,7 +91,7 @@ class IronsourceController extends Controller
 					if (isset($data[5]) && isset($data[7]) && isset($data[11])) {
 						$adsnetwork = $data[5];
 						$country = $data[7];
-						$revenue = $data[11];
+						$revenue = is_numeric($data[11]) ? $data[11] : 0;
 
 						if (strlen($country) > 2) {
 							$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai ' . $country);
@@ -100,9 +100,7 @@ class IronsourceController extends Controller
 
 						if (empty($arr_report[$adsnetwork][$country]['revenue'])) $arr_report[$adsnetwork][$country]['revenue'] = 0;
 
-						if (is_numeric($revenue)) {
-							$arr_report[$adsnetwork][$country]['revenue'] += $revenue;
-						}
+						$arr_report[$adsnetwork][$country]['revenue'] += $revenue;
 					}
 				}
 
@@ -142,9 +140,17 @@ class IronsourceController extends Controller
 
 						// report data
 						foreach ($arr_ironsource as $adsnetwork => $item_country) {
+							$adsnetwork_id = empty($arr_adsnetworks[$adsnetwork]) ? '' : $arr_adsnetworks[$adsnetwork];
 							foreach ($item_country as $country => $item_data) {
-								$adsnetwork_id = empty($arr_adsnetworks[$adsnetwork]) ? '' : $arr_adsnetworks[$adsnetwork];
-								$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+								if ($gameid == 1004) {
+									// Gun Clash 3D: Epic battle Android
+									if ($adsnetwork_id == 3 || $adsnetwork_id == 4) {
+										// ironsource , unity
+										$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+									}
+								} else {
+									$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+								}
 							}
 						}
 					}
@@ -162,7 +168,7 @@ class IronsourceController extends Controller
 		$datetoday = date('Y-m-d');
 		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
 		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
-		$date = '2020-12-24';
+		$date = '2020-12-26';
 
 		$adsnetworks_obj = new adsnetworks();
 		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
@@ -179,69 +185,69 @@ class IronsourceController extends Controller
 		$dem = 0;
 		foreach ($games as $item) {
 			$dem++;
-			if ($item->gameid == 1005) {
-				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
-					$gameid = $item->gameid;
+			if ($item->gameid == 1004) {
+			if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
+				$gameid = $item->gameid;
 
-					echo "<pre>";
-					print_r('----------- ' . $gameid . ' --------------');
+				echo "<pre>";
+				print_r('----------- ' . $gameid . ' --------------');
+				echo "</pre>";
+
+				$appKey = $item->ironscource_appkey;
+				$ironsource = $this->getRevenueIronsource($appKey, $date);
+				$ironsource = json_decode($ironsource, true);
+
+				echo "<pre>";
+				print_r($ironsource['message']);
+				echo "</pre>";
+
+				if ($ironsource['status'] == 1) {
+					$arr_ironsource = $ironsource['arr_report'];
+
+
+					/*echo "<pre>";
+					print_r('sum: ' . $sum_revenue_game);
 					echo "</pre>";
 
-					$appKey = $item->ironscource_appkey;
-					$ironsource = $this->getRevenueIronsource($appKey, $date);
-					$ironsource = json_decode($ironsource, true);
-
 					echo "<pre>";
-					print_r($ironsource['message']);
+					print_r($arr_ironsource);
 					echo "</pre>";
 
-					if ($ironsource['status'] == 1) {
-						$arr_ironsource = $ironsource['arr_report'];
-
-
-						/*echo "<pre>";
-						print_r('sum: ' . $sum_revenue_game);
-						echo "</pre>";
-
-						echo "<pre>";
-						print_r($arr_ironsource);
-						echo "</pre>";
-
-						echo "<pre>";
-						print_r($arr_report_adsnetwork);
-						echo "</pre>";
-
-						echo "<pre>";
-						print_r($arr_report_country);
-						echo "</pre>";*/
-						/*echo "<pre>";
-						print_r($arr_report_adsnetwork);
-						echo "</pre>";*/
-
-
-						/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
-							if (isset($arr_adsnetworks[$adsnetwork])) {
-								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
-								echo "<pre>";
-								print_r([$adsnetwork_id, $adsnetwork, $item_adsnetwork['revenue']]);
-								echo "</pre>";
-
-							}
-						}*/
-
-
-						/*foreach ($arr_ironsource as $adsnetwork => $item_country) {
-							foreach ($item_country as $country => $item) {
-								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
-								$reportdata_obj->insertReportdata_revenue($ngay_hom_truoc, $gameid, $adsnetwork_id, $country, $item['revenue']);
-							}
-						}*/
-					}
+					echo "<pre>";
+					print_r($arr_report_adsnetwork);
+					echo "</pre>";
 
 					echo "<pre>";
-					print_r('-------------------------------------------');
-					echo "</pre>";
+					print_r($arr_report_country);
+					echo "</pre>";*/
+					/*echo "<pre>";
+					print_r($arr_report_adsnetwork);
+					echo "</pre>";*/
+
+
+					/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
+						if (isset($arr_adsnetworks[$adsnetwork])) {
+							$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
+							echo "<pre>";
+							print_r([$adsnetwork_id, $adsnetwork, $item_adsnetwork['revenue']]);
+							echo "</pre>";
+
+						}
+					}*/
+
+
+					/*foreach ($arr_ironsource as $adsnetwork => $item_country) {
+						foreach ($item_country as $country => $item) {
+							$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
+							$reportdata_obj->insertReportdata_revenue($ngay_hom_truoc, $gameid, $adsnetwork_id, $country, $item['revenue']);
+						}
+					}*/
 				}
+
+				echo "<pre>";
+				print_r('-------------------------------------------');
+				echo "</pre>";
+			}
 			}
 		}
 	}

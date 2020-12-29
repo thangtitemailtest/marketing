@@ -31,7 +31,7 @@ class MarketingController extends Controller
 		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
 
 		$arr_date = array();
-		//$arr_date[] = $ngay_hom_truoc_kia;
+		$arr_date[] = $ngay_hom_truoc_kia;
 		$arr_date[] = $ngay_hom_truoc;
 		$arr_date[] = $ngay_hom_qua;
 
@@ -53,7 +53,7 @@ class MarketingController extends Controller
 		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
 
-        /*Adwords*/
+		/*Adwords*/
 		$adwords_obj = new AdswordController();
 		$adwords_obj->insertAdwords($arr_date2);
 		/*END Adwords*/
@@ -66,7 +66,7 @@ class MarketingController extends Controller
 		return 1;
 	}
 
-	public function getDataMarketingDate($date)
+	public function getDataMarketingDate($date, $adsnetwork)
 	{
 		set_time_limit(3600);
 
@@ -86,20 +86,26 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
-		/*IronSource*/
-		$ironsource_obj = new IronsourceController();
-		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
-		/*END IronSource*/
+		if ($adsnetwork == 'ironsource') {
+			/*IronSource*/
+			$ironsource_obj = new IronsourceController();
+			$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+			/*END IronSource*/
+		}
 
-        /*Adwords*/
-		$adwords_obj = new AdswordController();
-		$adwords_obj->insertAdwords($arr_date);
-		/*END Adwords*/
+		if ($adsnetwork == 'adwords') {
+			/*Adwords*/
+			$adwords_obj = new AdswordController();
+			$adwords_obj->insertAdwords($arr_date);
+			/*END Adwords*/
+		}
 
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date);
-		/*END Unity*/
+		if ($adsnetwork == 'unity') {
+			/*Unity*/
+			$unity_obj = new UnityadsController();
+			$unity_obj->insertUnityads($arr_date);
+			/*END Unity*/
+		}
 
 		return 1;
 	}
@@ -109,7 +115,8 @@ class MarketingController extends Controller
 		$input = $request->all();
 		if (isset($input['capnhatdulieu'])) {
 			$date = $input['date'];
-			$this->getDataMarketingDate($date);
+			$adsnetwork = $input['adsnetwork'];
+			$this->getDataMarketingDate($date, $adsnetwork);
 		}
 
 		return view('marketing.capnhatdulieu');
@@ -187,26 +194,37 @@ class MarketingController extends Controller
 		$gameid = $input['gameid'];
 		$settingcountry = new settingcountry();
 		$country = $settingcountry->getListCountryGame($gameid);
+		$arr_country = [];
+		foreach ($country as $item) {
+			$arr_country[] = $item->code;
+		}
 		?>
-        <div class="col-md-12 table-responsive">
+        <input type="hidden" name="arrcountry" id="arrcountry" value='<?= json_encode($arr_country) ?>'>
+        <div class="col-md-12 table-responsive" style="height: 500px">
             <table class="table table-bordered table-hover" width="100%" cellspacing="0"
                    id="dataTable">
                 <thead>
                 <tr>
-                    <th rowspan="2">Country</th>
-                    <th rowspan="2">Budget</th>
-                    <th colspan="2">Cost</th>
-                    <th rowspan="2">CPI target</th>
-                    <th rowspan="2">CTR</th>
-                    <th rowspan="2">CR</th>
-                    <th rowspan="2">Install</th>
-                    <th colspan="2">Revenue</th>
+                    <th rowspan="3" style="padding: 3px">Country</th>
+                    <th rowspan="3" style="padding: 3px">Budget</th>
+                    <th colspan="2" style="padding: 3px">Cost</th>
+                    <th rowspan="3" style="padding: 3px">CPI target</th>
+                    <th rowspan="3" style="padding: 3px">CTR</th>
+                    <th rowspan="3" style="padding: 3px">CR</th>
+                    <th rowspan="3" style="padding: 3px">Install</th>
+                    <th colspan="2" style="padding: 3px">Revenue</th>
                 </tr>
                 <tr>
-                    <th>USD</th>
-                    <th>VND</th>
-                    <th>USD</th>
-                    <th>VND</th>
+                    <th class="cltien" style="padding: 3px">USD</th>
+                    <th class="cltien" style="padding: 3px">VND</th>
+                    <th class="cltien" style="padding: 3px">USD</th>
+                    <th class="cltien" style="padding: 3px">VND</th>
+                </tr>
+                <tr>
+                    <th class="cltien2" style="padding: 3px" id="sumcostusd"></th>
+                    <th class="cltien2" style="padding: 3px" id="sumcostvnd"></th>
+                    <th class="cltien2" style="padding: 3px" id="sumrevenueusd"></th>
+                    <th class="cltien2" style="padding: 3px" id="sumrevenuevnd"></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -217,32 +235,33 @@ class MarketingController extends Controller
                         <input type="hidden" name="countrycode<?= $item->code ?>"
                                id="countrycode<?= $item->code ?>" value="<?= $item->code ?>">
                         <td><?= $item->name ?> (<?= $item->code ?>)</td>
-                        <td><input type="number" class="form-control" name="budget<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="budget<?= $item->code ?>"
+                                   onkeyup="addcomma1(this)"
                                    id="budget<?= $item->code ?>">
                         </td>
-                        <td><input type="number" class="form-control" name="costusd<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="costusd<?= $item->code ?>"
                                    id="costusd<?= $item->code ?>"
                                    onkeyup="changeCostUsd('<?= $item->code ?>')">
                         </td>
-                        <td><input type="text" class="form-control" name="costvnd<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="costvnd<?= $item->code ?>"
                                    onkeyup="changeCostVnd(this,'<?= $item->code ?>')"
                                    id="costvnd<?= $item->code ?>">
                         </td>
-                        <td><input type="number" class="form-control"
+                        <td><input type="text" class="form-control clearinput"
                                    name="cpitarget<?= $item->code ?>" id="cpitarget<?= $item->code ?>">
                         </td>
-                        <td><input type="number" class="form-control" name="ctr<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="ctr<?= $item->code ?>"
                                    id="ctr<?= $item->code ?>">
                         </td>
-                        <td><input type="number" class="form-control" name="cr<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="cr<?= $item->code ?>"
                                    id="cr<?= $item->code ?>"></td>
-                        <td><input type="number" class="form-control" name="install<?= $item->code ?>"
+                        <td><input type="text" class="form-control clearinput" name="install<?= $item->code ?>"
                                    id="install<?= $item->code ?>">
                         </td>
-                        <td><input type="number" class="form-control"
+                        <td><input type="text" class="form-control clearinput"
                                    name="revenueusd<?= $item->code ?>" id="revenueusd<?= $item->code ?>"
                                    onkeyup="changeRevenueUsd('<?= $item->code ?>')"></td>
-                        <td><input type="text" class="form-control"
+                        <td><input type="text" class="form-control clearinput"
                                    onkeyup="changeRevenueVnd(this,'<?= $item->code ?>')"
                                    name="revenuevnd<?= $item->code ?>" id="revenuevnd<?= $item->code ?>">
                         </td>
@@ -256,6 +275,42 @@ class MarketingController extends Controller
 		<?php
 	}
 
+	public function getBangthemdulieuThongsoads(Request $request)
+	{
+		$input = $request->all();
+		$gameid = $input['gameid'];
+		$adsnetworkid = $input['adsnetwork'];
+		$date = $input['date'];
+
+		$result = [];
+		$reportdata_obj = new reportdata();
+		$reportdata = $reportdata_obj->getListWhereGameAdsDate($gameid, $adsnetworkid, $date);
+		foreach ($reportdata as $item) {
+			$countrycode = $item->countrycode;
+			$budget = $item->budget;
+			$cost = $item->cost;
+			$costusd = $cost / config('tygia.cost');
+			$cpitarget = $item->cpitarget;
+			$ctr = $item->ctr;
+			$cr = $item->cr;
+			$install = $item->install;
+			$revenue = $item->revenue;
+			$revenueusd = $revenue / config('tygia.revenue');
+
+			$result[$countrycode]['budget'] = $budget;
+			$result[$countrycode]['cost'] = number_format($cost);
+			$result[$countrycode]['costusd'] = round($costusd, 2);
+			$result[$countrycode]['cpitarget'] = $cpitarget;
+			$result[$countrycode]['ctr'] = $ctr;
+			$result[$countrycode]['cr'] = $cr;
+			$result[$countrycode]['install'] = $install;
+			$result[$countrycode]['revenue'] = number_format($revenue);
+			$result[$countrycode]['revenueusd'] = round($revenueusd, 2);
+		}
+
+		return json_encode($result);
+	}
+
 	public function postThemdulieu(Request $request)
 	{
 		$input = $request->all();
@@ -266,9 +321,7 @@ class MarketingController extends Controller
 		$settingcountry = new settingcountry();
 		$country = $settingcountry->getListCountryGame($gameid);
 		$reportdata_obj = new reportdata();
-		//$reportgame_obj = new reportgame();
-		//$reportadsnetwork_obj = new reportadsnetwork();
-		//$reportcountry_obj = new reportcountry();
+
 		foreach ($country as $item) {
 			$countrycode = $item->code;
 			if (isset($input['countrycode' . $countrycode])) {
@@ -282,21 +335,7 @@ class MarketingController extends Controller
 				$reportdata_obj->insertReportdata_all_form($date, $gameid, $adsnetworkid, $countrycode, $revenue, $cost, $budget, $cpitarget, $ctr, $cr, $install);
 			}
 
-			//$sumRevenue_country = $reportdata_obj->sumReportdata('revenue', $date, '', '', $countrycode);
-			//$sumCost_country = $reportdata_obj->sumReportdata('cost', $date, '', '', $countrycode);
-			//$suminstall_country = $reportdata_obj->sumReportdata('install', $date, '', '', $countrycode);
-			//$reportcountry_obj->insertReportcountry_all_form($date, $countrycode, $sumRevenue_country, $sumCost_country, '', '', '', '', $suminstall_country);
 		}
-
-		//$sumRevenue_game = $reportdata_obj->sumReportdata('revenue', $date, $gameid);
-		//$sumCost_game = $reportdata_obj->sumReportdata('cost', $date, $gameid);
-		//$suminstall_game = $reportdata_obj->sumReportdata('install', $date, $gameid);
-		//$reportgame_obj->insertReportgame_all_form($date, $gameid, $sumRevenue_game, $sumCost_game, '', '', '', '', $suminstall_game);
-
-		//$sumRevenue_adsnetwork = $reportdata_obj->sumReportdata('revenue', $date, '', $adsnetworkid);
-		//$sumCost_adsnetwork = $reportdata_obj->sumReportdata('cost', $date, '', $adsnetworkid);
-		//$suminstall_adsnetwork = $reportdata_obj->sumReportdata('install', $date, '', $adsnetworkid);
-		//$reportadsnetwork_obj->insertReportadsnetwork_all_form($date, $adsnetworkid, $sumRevenue_adsnetwork, $sumCost_adsnetwork, '', '', '', '', $suminstall_adsnetwork);
 
 		return redirect()->back()->with('mess', 'Thêm dữ liệu thành công!');
 	}
@@ -320,6 +359,98 @@ class MarketingController extends Controller
 		if (empty($permission)) $permission[0] = '';
 
 		return view('marketing.thongkedulieutheoquocgia', compact('adsnetwork', 'count_adsnetwork', 'country', 'game', 'permission'));
+	}
+
+	public function getThongkegame()
+	{
+		$game_obj = new game();
+		$game_arr = $game_obj->getListGameArrayGameid();
+		$reportdata_obj = new reportdata();
+		$reportdata = $reportdata_obj->getListAll();
+
+		$sum_install = 0;
+		$sum_cost = 0;
+		$sum_revenue = 0;
+		$data = [];
+		foreach ($reportdata as $item) {
+			$gameid = $item->gameid;
+			$install = $item->install;
+			$cost = $item->cost;
+			$revenue = $item->revenue;
+
+			if (empty($data[$gameid]['install'])) $data[$gameid]['install'] = 0;
+			if (empty($data[$gameid]['cost'])) $data[$gameid]['cost'] = 0;
+			if (empty($data[$gameid]['revenue'])) $data[$gameid]['revenue'] = 0;
+
+			$data[$gameid]['install'] += $install;
+			$data[$gameid]['cost'] += $cost;
+			$data[$gameid]['revenue'] += $revenue;
+
+			$sum_install += $install;
+			$sum_cost += $cost;
+			$sum_revenue += $revenue;
+		}
+
+		$sum_performance = $sum_revenue - $sum_cost;
+		if (empty($sum_cost)) {
+			$sum_profit = 0;
+		} else {
+			$sum_profit = round($sum_performance / $sum_cost * 100, 2);
+		}
+		$sum_profit .= " %";
+
+		?>
+        <table class="table table-bordered table-hover" width="100%"
+               cellspacing="0">
+            <thead>
+            <tr>
+                <th>Game</th>
+                <th>Install</th>
+                <th>Cost</th>
+                <th>Revenue</th>
+                <th>Performance</th>
+                <th>Profit Rate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>Sum</th>
+                <th><?= number_format($sum_install) ?></th>
+                <th><?= number_format($sum_cost) ?></th>
+                <th><?= number_format($sum_revenue) ?></th>
+                <th><?= number_format($sum_performance) ?></th>
+                <th><?= $sum_profit ?></th>
+            </tr>
+			<?php
+
+			foreach ($game_arr as $gameid => $game_name) {
+				$install = empty($data[$gameid]['install']) ? 0 : $data[$gameid]['install'];
+				$cost = empty($data[$gameid]['cost']) ? 0 : $data[$gameid]['cost'];
+				$revenue = empty($data[$gameid]['revenue']) ? 0 : $data[$gameid]['revenue'];
+
+				$performance = $revenue - $cost;
+				if (empty($cost)) {
+					$profit = 0;
+				} else {
+					$profit = round($performance / $cost * 100, 2);
+				}
+				$profit .= " %";
+
+				?>
+                <tr>
+                    <td style="text-align: left"><?= $game_name ?></td>
+                    <td style="text-align: right"><?= number_format($install) ?></td>
+                    <td style="text-align: right"><?= number_format($cost) ?></td>
+                    <td style="text-align: right"><?= number_format($revenue) ?></td>
+                    <td style="text-align: right"><?= number_format($performance) ?></td>
+                    <td style="text-align: right"><?= $profit ?></td>
+                </tr>
+				<?php
+			}
+			?>
+            </tbody>
+        </table>
+		<?php
 	}
 
 	public function getOverall(Request $request)
@@ -359,6 +490,126 @@ class MarketingController extends Controller
 		}
 
 		return json_encode($arrreport);
+	}
+
+	public function getOverallCountry(Request $request)
+	{
+		$input = $request->all();
+		$date = $this->getDate($input);
+		$gameid = $input['game'];
+		$datefrom = $date['from'];
+		$dateto = $date['to'];
+		$countrycode = $input['countrycode'];
+		$countryname = $input['countryname'];
+
+		$reportdata_obj = new reportdata();
+		$reportdata_gamecountry = $reportdata_obj->getListWhereGameCountryDate($gameid, $countrycode, $datefrom, $dateto);
+
+		$sum_install = 0;
+		$sum_revenue = 0;
+		$sum_cost = 0;
+		$arrreport = [];
+		foreach ($reportdata_gamecountry as $item) {
+			$date = $item->date;
+
+			if (empty($arrreport[$date]['install'])) $arrreport[$date]['install'] = 0;
+			if (empty($arrreport[$date]['revenue'])) $arrreport[$date]['revenue'] = 0;
+			if (empty($arrreport[$date]['cost'])) $arrreport[$date]['cost'] = 0;
+
+			$arrreport[$date]['install'] += $item->install;
+			$arrreport[$date]['revenue'] += $item->revenue;
+			$arrreport[$date]['cost'] += $item->cost;
+
+			$sum_install += $item->install;
+			$sum_revenue += $item->revenue;
+			$sum_cost += $item->cost;
+		}
+
+		$sum_performance = $sum_revenue - $sum_cost;
+		if (empty($sum_cost)) {
+			$sum_profit = 0;
+		} else {
+			$sum_profit = round($sum_performance / $sum_cost * 100, 2);
+		}
+		$sum_profit .= " %";
+
+		$begin = new DateTime($datefrom);
+		$end = new DateTime($dateto);
+
+		for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
+			$date = $i->format("Y-m-d");
+			if (!isset($arrreport[$date])) {
+				$arrreport[$date]['install'] = 0;
+				$arrreport[$date]['revenue'] = 0;
+				$arrreport[$date]['cost'] = 0;
+			}
+		}
+
+		?>
+        <table class="table table-bordered table-hover" width="100%"
+               cellspacing="0">
+            <thead>
+            <tr>
+                <th colspan="6"><?= $countryname ?></th>
+            </tr>
+            <tr>
+                <th>Ngày</th>
+                <th>Install</th>
+                <th>Cost</th>
+                <th>Revenue</th>
+                <th>Performance</th>
+                <th>Profit Rate</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th>Sum</th>
+                <th><?= number_format($sum_install) ?></th>
+                <th><?= number_format($sum_cost) ?></th>
+                <th><?= number_format($sum_revenue) ?></th>
+                <th><?= number_format($sum_performance) ?></th>
+                <th><?= $sum_profit ?></th>
+            </tr>
+			<?php
+			$begin = new DateTime($datefrom);
+			$end = new DateTime($dateto);
+
+			for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
+				$date = $i->format("Y-m-d");
+				$date_show = $i->format("d/m/Y");
+				if (!isset($arrreport[$date])) {
+					$arrreport[$date]['install'] = 0;
+					$arrreport[$date]['revenue'] = 0;
+					$arrreport[$date]['cost'] = 0;
+				}
+
+				$install = $arrreport[$date]['install'];
+				$revenue = $arrreport[$date]['revenue'];
+				$cost = $arrreport[$date]['cost'];
+
+				$performance = $revenue - $cost;
+				if (empty($cost)) {
+					$profit = 0;
+				} else {
+					$profit = round($performance / $cost * 100, 2);
+				}
+				$profit .= " %";
+
+				?>
+                <tr>
+                    <td><?= $date_show ?></td>
+                    <td><?= number_format($install) ?></td>
+                    <td><?= number_format($cost) ?></td>
+                    <td><?= number_format($revenue) ?></td>
+                    <td><?= number_format($performance) ?></td>
+                    <td><?= $profit ?></td>
+                </tr>
+				<?php
+			}
+			?>
+            </tbody>
+        </table>
+		<?php
 	}
 
 	public function getSummary(Request $request)
@@ -721,8 +972,37 @@ class MarketingController extends Controller
 		$adsnetworkid = $input['adsnetworkid'];
 		$datetoday = date('Y-m-d');
 
+		$sum_install_all = 0;
+		$sum_revenue_all = 0;
+		$sum_cost_all = 0;
+
 		$reportdata_obj = new reportdata();
 		$reportdata_game = $reportdata_obj->getListWhereGameAdsCountryDate($gameid, $adsnetworkid, $countrycode, $datefrom, $dateto);
+		$reportdata_gamecountry = $reportdata_obj->getListWhereGameCountryDate($gameid, $countrycode, $datefrom, $dateto);
+		$arrreport = [];
+		foreach ($reportdata_gamecountry as $item) {
+			$date = $item->date;
+
+			if (empty($arrreport[$date]['install'])) $arrreport[$date]['install'] = 0;
+			if (empty($arrreport[$date]['revenue'])) $arrreport[$date]['revenue'] = 0;
+			if (empty($arrreport[$date]['cost'])) $arrreport[$date]['cost'] = 0;
+
+			$arrreport[$date]['install'] += $item->install;
+			$arrreport[$date]['revenue'] += $item->revenue;
+			$arrreport[$date]['cost'] += $item->cost;
+
+			$sum_install_all += $item->install;
+			$sum_revenue_all += $item->revenue;
+			$sum_cost_all += $item->cost;
+		}
+
+		$sum_performance_all = $sum_revenue_all - $sum_cost_all;
+		if (empty($sum_cost_all)) {
+			$sum_profit_all = 0;
+		} else {
+			$sum_profit_all = round($sum_performance_all / $sum_cost_all * 100, 2);
+		}
+		$sum_profit_all .= ' %';
 
 		$sum_cost = 0;
 		//$sum_revenue = 0;
@@ -807,7 +1087,7 @@ class MarketingController extends Controller
                        cellspacing="0">
                     <thead>
                     <tr>
-                        <th colspan="11"><?= $country_name ?></th>
+                        <th colspan="15"><?= $country_name ?></th>
                     </tr>
                     <tr>
                         <th style="width: 100px;">Date</th>
@@ -821,6 +1101,11 @@ class MarketingController extends Controller
                         <!--<th>Revenue</th>
                         <th>Performance</th>
                         <th>Profit rate</th>-->
+                        <th>Sum Install</th>
+                        <th>Sum Cost</th>
+                        <th>Sum Revenue</th>
+                        <th>Sum Performance</th>
+                        <th>Sum Profit Rate</th>
                     </tr>
                     <tr>
                         <th>Total</th>
@@ -834,6 +1119,11 @@ class MarketingController extends Controller
                         <!--<th><?/*= number_format($sum_revenue) */ ?></th>
                         <th><?/*= number_format($sum_performance) */ ?></th>
                         <th><?/*= $sum_profit */ ?> </th>-->
+                        <th><?= number_format($sum_install_all) ?></th>
+                        <th><?= number_format($sum_cost_all) ?></th>
+                        <th><?= number_format($sum_revenue_all) ?></th>
+                        <th><?= number_format($sum_performance_all) ?></th>
+                        <th><?= $sum_profit_all ?></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -868,6 +1158,17 @@ class MarketingController extends Controller
 						} else {
 							$cpiavg = $cost / $install;
 						}
+
+						$sumcost = empty($arrreport[$date]['cost']) ? 0 : $arrreport[$date]['cost'];
+						$sumrevenue = empty($arrreport[$date]['revenue']) ? 0 : $arrreport[$date]['revenue'];
+						$suminstall = empty($arrreport[$date]['install']) ? 0 : $arrreport[$date]['install'];
+						$sumperformance = $sumrevenue - $sumcost;
+						if (empty($sumcost)) {
+							$sumprofit = 0;
+						} else {
+							$sumprofit = round($sumperformance / $sumcost * 100, 2);
+						}
+						$sumprofit .= ' %';
 						?>
                         <tr class="<?= $cltr ?>">
                             <td style="text-align: right"><?= $show_thu ?></td>
@@ -881,6 +1182,11 @@ class MarketingController extends Controller
                             <!--<td><?/*= $this->checkValueDate(number_format($revenue), $date, $datetoday) */ ?></td>
                             <td><?/*= $this->checkValueDate(number_format($performance), $date, $datetoday) */ ?></td>
                             <td><?/*= $this->checkValueDate($profit, $date, $datetoday) */ ?></td>-->
+                            <td><?= number_format($suminstall) ?></td>
+                            <td><?= number_format($sumcost) ?></td>
+                            <td><?= number_format($sumrevenue) ?></td>
+                            <td><?= number_format($sumperformance) ?></td>
+                            <td><?= $sumprofit ?></td>
                         </tr>
 						<?php
 					}

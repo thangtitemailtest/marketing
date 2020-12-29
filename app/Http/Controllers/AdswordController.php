@@ -142,40 +142,43 @@ class AdswordController extends Controller
 					if ($countrycode == "UK") {
 						$countrycode = "GB";
 					}
-					$settings = $item->getSettings()[1];
-					$packagename = $settings->getAppId();
 
-					if (!isset($arr_game[$packagename])) {
-						$gameid_moi = $games->insertGame($packagename, $gamename);
-						$arr_game[$packagename] = $gameid_moi;
-					}
+					if (strlen($countrycode) <= 6) {
+						$settings = $item->getSettings()[1];
+						$packagename = $settings->getAppId();
 
-					$gameid = $arr_game[$packagename];
-
-					$obj = $ads->report()
-						->from('CAMPAIGN_PERFORMANCE_REPORT')
-						->during($date_query, $date_query)
-						->where('CampaignId = ' . $camp_id)
-						->select('CampaignId', 'CampaignName', 'Cost', 'Amount', 'CampaignStatus', 'AccountCurrencyCode', 'Ctr', 'ConversionRate', 'Conversions')
-						->getAsObj()->result;
-					foreach ($obj as $item_c) {
-						$donvitien = $item_c->currency;
-						$cost = is_numeric($item_c->cost) ? $item_c->cost : 0;
-						$cost = round($cost / 1000000, 2);
-						$budget = is_numeric($item_c->budget) ? $item_c->budget : 0;
-						$budget = round($budget / 1000000, 2);
-						if ($donvitien == 'USD') {
-							$cost = $cost * config('tygia.cost');
-							$budget = $budget . " $";
+						if (!isset($arr_game[$packagename])) {
+							$gameid_moi = $games->insertGame($packagename, $gamename);
+							$arr_game[$packagename] = $gameid_moi;
 						}
-						if ($donvitien == 'VND') {
-							$budget = number_format($budget) . " đ";
-						}
-						$ctr = $item_c->ctr;
-						$cr = $item_c->convRate;
-						$install = $item_c->conversions;
 
-						$reportdata->insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install);
+						$gameid = $arr_game[$packagename];
+
+						$obj = $ads->report()
+							->from('CAMPAIGN_PERFORMANCE_REPORT')
+							->during($date_query, $date_query)
+							->where('CampaignId = ' . $camp_id)
+							->select('CampaignId', 'CampaignName', 'Cost', 'Amount', 'CampaignStatus', 'AccountCurrencyCode', 'Ctr', 'ConversionRate', 'Conversions')
+							->getAsObj()->result;
+						foreach ($obj as $item_c) {
+							$donvitien = $item_c->currency;
+							$cost = is_numeric($item_c->cost) ? $item_c->cost : 0;
+							$cost = round($cost / 1000000, 2);
+							$budget = is_numeric($item_c->budget) ? $item_c->budget : 0;
+							$budget = round($budget / 1000000, 2);
+							if ($donvitien == 'USD') {
+								$cost = $cost * config('tygia.cost');
+								$budget = $budget . " $";
+							}
+							if ($donvitien == 'VND') {
+								$budget = number_format($budget) . " đ";
+							}
+							$ctr = $item_c->ctr;
+							$cr = $item_c->convRate;
+							$install = $item_c->conversions;
+
+							$reportdata->insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install);
+						}
 					}
 				}
 			}

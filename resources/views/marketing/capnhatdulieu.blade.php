@@ -30,6 +30,18 @@
                                        value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}">
                             </div>
                         </div>
+                        <div class="col-md-3" style="height: 80px;">
+                            <div class="form-group input-group-sm">
+                                <label class="radio-inline mr-3">Adsnetowrk &nbsp; &nbsp; </label>
+                                <select name="adsnetworkid" id="adsnetworkid" class="form-control chosen-select"
+                                        onchange="changeAds()">
+                                    <option value="0">--Chọn Adsnetwork--</option>
+                                    <option value="ironsource">Ironsource</option>
+                                    <option value="adwords">GoogleAds</option>
+                                    <option value="unity">Unity</option>
+                                </select>
+                            </div>
+                        </div>
                         <div class="col-xs-9 col-md-9" id="thongbao" style="display: none">
                             <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p - 20p. Vui lòng đợi và
                                 không
@@ -71,6 +83,8 @@
                         <input type="hidden" name="capnhatdulieu" id="capnhatdulieu" value="1">
                         <input type="hidden" name="date" id="date"
                                value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}">
+                        <input type="hidden" name="adsnetwork" id="adsnetwork"
+                               value="">
                         <button type="button" class="btn btn-primary" onclick="clickCapnhat()" id="btnsubmit"
                                 style="margin-right: 10px">Cập nhật
                         </button>
@@ -89,6 +103,11 @@
             $('#date').val(ngay);
         }
 
+        function changeAds() {
+            var adsnetworkid = $('#adsnetworkid').val();
+            $('#adsnetwork').val(adsnetworkid);
+        }
+
         function clickCapnhat() {
             event.preventDefault();
 
@@ -97,6 +116,11 @@
 
                 if ($('#date').val() == '') {
                     makeAlertright('Vui lòng chọn Ngày.', 3000);
+                    return;
+                }
+
+                if ($('#adsnetwork').val() == '') {
+                    makeAlertright('Vui lòng chọn Adsnetwork.', 3000);
                     return;
                 }
 

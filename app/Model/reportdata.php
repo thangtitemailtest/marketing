@@ -47,11 +47,13 @@ class reportdata extends Model
 		if ($checkReportdata) {
 			$checkReportdata->updatedate = date('Y-m-d H:i:s');
 			$checkReportdata->cost = $cost;
-			$checkReportdata->budget = $budget;
+			if (!empty($budget)) {
+				$checkReportdata->budget = $budget;
+			}
 			$checkReportdata->ctr = $ctr;
 			$checkReportdata->cr = $cr;
 			$checkReportdata->install = $install;
-			if (!empty($cpi)){
+			if (!empty($cpi)) {
 				$checkReportdata->cpitarget = $cpi;
 			}
 			$checkReportdata->save();
@@ -62,11 +64,13 @@ class reportdata extends Model
 			$reportdata_obj->adsnetworkid = $adsnetworkid;
 			$reportdata_obj->countrycode = $countrycode;
 			$reportdata_obj->cost = $cost;
-			$reportdata_obj->budget = $budget;
+			if (!empty($budget)) {
+				$reportdata_obj->budget = $budget;
+			}
 			$reportdata_obj->ctr = $ctr;
 			$reportdata_obj->cr = $cr;
 			$reportdata_obj->install = $install;
-			if (!empty($cpi)){
+			if (!empty($cpi)) {
 				$reportdata_obj->cpitarget = $cpi;
 			}
 			$reportdata_obj->save();
@@ -78,27 +82,13 @@ class reportdata extends Model
 		$checkReportdata = $this->checkReportdata($date, $gameid, $adsnetworkid, $countrycode);
 		if ($checkReportdata) {
 			$checkReportdata->updatedate = date('Y-m-d H:i:s');
-			if (!empty($revenue)) {
-				$checkReportdata->revenue = $revenue;
-			}
-			if (!empty($cost)) {
-				$checkReportdata->cost = $cost;
-			}
-			if (!empty($budget)) {
-				$checkReportdata->budget = $budget;
-			}
-			if (!empty($cpitarget)) {
-				$checkReportdata->cpitarget = $cpitarget;
-			}
-			if (!empty($ctr)) {
-				$checkReportdata->ctr = $ctr;
-			}
-			if (!empty($cr)) {
-				$checkReportdata->cr = $cr;
-			}
-			if (!empty($install)) {
-				$checkReportdata->install = $install;
-			}
+			$checkReportdata->revenue = $revenue;
+			$checkReportdata->cost = $cost;
+			$checkReportdata->budget = $budget;
+			$checkReportdata->cpitarget = $cpitarget;
+			$checkReportdata->ctr = $ctr;
+			$checkReportdata->cr = $cr;
+			$checkReportdata->install = $install;
 			$checkReportdata->save();
 		} else {
 			$reportdata_obj = new reportdata();
@@ -106,27 +96,13 @@ class reportdata extends Model
 			$reportdata_obj->gameid = $gameid;
 			$reportdata_obj->adsnetworkid = $adsnetworkid;
 			$reportdata_obj->countrycode = $countrycode;
-			if (!empty($revenue)) {
-				$checkReportdata->revenue = $revenue;
-			}
-			if (!empty($cost)) {
-				$checkReportdata->cost = $cost;
-			}
-			if (!empty($budget)) {
-				$checkReportdata->budget = $budget;
-			}
-			if (!empty($cpitarget)) {
-				$checkReportdata->cpitarget = $cpitarget;
-			}
-			if (!empty($ctr)) {
-				$checkReportdata->ctr = $ctr;
-			}
-			if (!empty($cr)) {
-				$checkReportdata->cr = $cr;
-			}
-			if (!empty($install)) {
-				$checkReportdata->install = $install;
-			}
+			$reportdata_obj->revenue = $revenue;
+			$reportdata_obj->cost = $cost;
+			$reportdata_obj->budget = $budget;
+			$reportdata_obj->cpitarget = $cpitarget;
+			$reportdata_obj->ctr = $ctr;
+			$reportdata_obj->cr = $cr;
+			$reportdata_obj->install = $install;
 			$reportdata_obj->save();
 		}
 
@@ -171,6 +147,14 @@ class reportdata extends Model
 		return $reportdata;
 	}
 
+	public function getListAll()
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid', 'gameid')
+			->get();
+
+		return $reportdata;
+	}
+
 	public function getListWhereGameAll($gameid)
 	{
 		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
@@ -187,6 +171,29 @@ class reportdata extends Model
 			->where('date', '<=', $dateto)
 			->where('gameid', '=', $gameid)
 			->where('adsnetworkid', '=', $adsnetworkid)
+			->where('countrycode', '=', $countrycode)
+			->get();
+
+		return $reportdata;
+	}
+
+	public function getListWhereGameAdsDate($gameid, $adsnetworkid, $date)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
+			->where('date', '=', $date)
+			->where('gameid', '=', $gameid)
+			->where('adsnetworkid', '=', $adsnetworkid)
+			->get();
+
+		return $reportdata;
+	}
+
+	public function getListWhereGameCountryDate($gameid, $countrycode, $datefrom, $dateto)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid')
+			->where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
+			->where('gameid', '=', $gameid)
 			->where('countrycode', '=', $countrycode)
 			->get();
 
