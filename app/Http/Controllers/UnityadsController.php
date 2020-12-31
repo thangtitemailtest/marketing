@@ -15,14 +15,14 @@ class UnityadsController extends Controller
 		$organization_id = "5c9b1c210d7ede00277e9950";
 
 		$crl = curl_init();
-		$URL = "https://stats.unityads.unity3d.com/organizations/" . $organization_id . "/reports/acquisitions?splitBy=target,country&start=2020-12-23T00:00:00&end=2020-12-23T23:59:59&scale=day&apikey=" . $api_key;
+		$URL = "https://stats.unityads.unity3d.com/organizations/" . $organization_id . "/reports/acquisitions?splitBy=target,country&start=2020-12-30T00:00:00&end=2020-12-30T23:59:59&scale=day&apikey=" . $api_key;
 		curl_setopt($crl, CURLOPT_URL, $URL);
 		curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($crl);
 		curl_close($crl);
 
 		$data = array_map('str_getcsv', explode("\n", $response));
-		dd($data);
+		//dd($data);
 		foreach ($data as $key => $item) {
 			if ($key > 0 && !empty($item[0])) {
 				$packagename = $item[2];

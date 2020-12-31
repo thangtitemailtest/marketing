@@ -37,6 +37,10 @@ Route::middleware('Checklogin')->group(function () {
 
 	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
 
+	Route::get('/settinggetrevenue', 'MarketingController@getSettinggetrevenue')->name('get-settinggetrevenue');
+	Route::post('/settinggetrevenuepost', 'MarketingController@postSettinggetrevenue')->name('post-settinggetrevenue');
+	Route::get('/bangsettinggetrevenue', 'MarketingController@getBangsettinggetrevenue')->name('get-bangsettinggetrevenue');
+
 	/*Report*/
 	Route::group(['prefix' => 'report'], function () {
 		//Route::get('/', 'chartController@index')->name('get.report');
@@ -65,10 +69,13 @@ Route::middleware('Checklogout')->group(function () {
 
 /*Ads*/
 Route::get('/getdatamarketing', 'MarketingController@getDataMarketing')->name('get-datamarketing');
+Route::get('/getdatamarketingironsource', 'MarketingController@getDataMarketingIronsource')->name('get-datamarketingironsource');
 
 Route::get('/adsword', 'AdswordController@getAdsword')->name('get-asdwords');
 Route::get('/ironsource', 'IronsourceController@getIronsource')->name('get-ironsource');
 Route::get('/unityads', 'UnityadsController@getUnityads');
+Route::get('/getsearchads', 'SearchAdsController@getSearchads');
+Route::get('/getapplovin', 'ApplovinController@getApplovin');
 //Route::get('/revenueironsource', 'IronsourceController@getRevenueIronsource');
 /*END Ads*/
 

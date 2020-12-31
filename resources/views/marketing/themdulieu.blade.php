@@ -45,7 +45,7 @@
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">Ngày</label>
-                                <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d')}}"
+                                <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}"
                                        onchange="changeAds()">
                             </div>
                         </div>

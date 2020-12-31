@@ -8,6 +8,7 @@ use App\Model\reportadsnetwork;
 use App\Model\reportcountry;
 use App\Model\reportdata;
 use App\Model\reportgame;
+use App\Model\settinggetrevenue;
 use App\Model\timeupdatedata;
 use Illuminate\Http\Request;
 
@@ -79,7 +80,7 @@ class IronsourceController extends Controller
 			$row = 0;
 			while (($data = fgetcsv($dest, 1000, ",")) !== FALSE) {
 				if ($row == 0) {
-					if ($data[7] != 'country') {
+					if (!isset($data[7]) || $data[7] != 'country') {
 						$file_name_error = str_replace("report", "report" . date('YmdHis'), $file_name);
 						$dir_error = getcwd() . "/adsironsource/errorfile/" . $file_name_error;
 						copy($dir, $dir_error);
@@ -94,6 +95,9 @@ class IronsourceController extends Controller
 						$revenue = is_numeric($data[11]) ? $data[11] : 0;
 
 						if (strlen($country) > 2) {
+							$file_name_error = str_replace("report", "report" . date('YmdHis'), $file_name);
+							$dir_error = getcwd() . "/adsironsource/errorfile/" . $file_name_error;
+							copy($dir, $dir_error);
 							$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai ' . $country);
 							return json_encode(array('status' => 0, 'message' => 'country sai'));
 						}
@@ -126,6 +130,9 @@ class IronsourceController extends Controller
 		$reportdata_obj = new reportdata();
 		$timeupdatedata_obj = new timeupdatedata();
 
+		$settinggetrevenue_obj = new settinggetrevenue();
+		$kenh = 'ironsource';
+
 		foreach ($arr_date as $date) {
 			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok vao');
 			foreach ($games as $item) {
@@ -142,7 +149,11 @@ class IronsourceController extends Controller
 						foreach ($arr_ironsource as $adsnetwork => $item_country) {
 							$adsnetwork_id = empty($arr_adsnetworks[$adsnetwork]) ? '' : $arr_adsnetworks[$adsnetwork];
 							foreach ($item_country as $country => $item_data) {
-								if ($gameid == 1004) {
+								$settinggetrevenue = $settinggetrevenue_obj->getSettingWhereGameKenhToArr($gameid, $kenh);
+								if (isset($settinggetrevenue[$adsnetwork_id])){
+									$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+								}
+								/*if ($gameid == 1004) {
 									// Gun Clash 3D: Epic battle Android
 									if ($adsnetwork_id == 3 || $adsnetwork_id == 4) {
 										// ironsource , unity
@@ -150,7 +161,7 @@ class IronsourceController extends Controller
 									}
 								} else {
 									$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
-								}
+								}*/
 							}
 						}
 					}
@@ -186,68 +197,68 @@ class IronsourceController extends Controller
 		foreach ($games as $item) {
 			$dem++;
 			if ($item->gameid == 1004) {
-			if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
-				$gameid = $item->gameid;
-
-				echo "<pre>";
-				print_r('----------- ' . $gameid . ' --------------');
-				echo "</pre>";
-
-				$appKey = $item->ironscource_appkey;
-				$ironsource = $this->getRevenueIronsource($appKey, $date);
-				$ironsource = json_decode($ironsource, true);
-
-				echo "<pre>";
-				print_r($ironsource['message']);
-				echo "</pre>";
-
-				if ($ironsource['status'] == 1) {
-					$arr_ironsource = $ironsource['arr_report'];
-
-
-					/*echo "<pre>";
-					print_r('sum: ' . $sum_revenue_game);
-					echo "</pre>";
+				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
+					$gameid = $item->gameid;
 
 					echo "<pre>";
-					print_r($arr_ironsource);
+					print_r('----------- ' . $gameid . ' --------------');
 					echo "</pre>";
 
+					$appKey = $item->ironscource_appkey;
+					$ironsource = $this->getRevenueIronsource($appKey, $date);
+					$ironsource = json_decode($ironsource, true);
+
 					echo "<pre>";
-					print_r($arr_report_adsnetwork);
+					print_r($ironsource['message']);
 					echo "</pre>";
 
+					if ($ironsource['status'] == 1) {
+						$arr_ironsource = $ironsource['arr_report'];
+
+
+						/*echo "<pre>";
+						print_r('sum: ' . $sum_revenue_game);
+						echo "</pre>";
+
+						echo "<pre>";
+						print_r($arr_ironsource);
+						echo "</pre>";
+
+						echo "<pre>";
+						print_r($arr_report_adsnetwork);
+						echo "</pre>";
+
+						echo "<pre>";
+						print_r($arr_report_country);
+						echo "</pre>";*/
+						/*echo "<pre>";
+						print_r($arr_report_adsnetwork);
+						echo "</pre>";*/
+
+
+						/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
+							if (isset($arr_adsnetworks[$adsnetwork])) {
+								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
+								echo "<pre>";
+								print_r([$adsnetwork_id, $adsnetwork, $item_adsnetwork['revenue']]);
+								echo "</pre>";
+
+							}
+						}*/
+
+
+						/*foreach ($arr_ironsource as $adsnetwork => $item_country) {
+							foreach ($item_country as $country => $item) {
+								$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
+								$reportdata_obj->insertReportdata_revenue($ngay_hom_truoc, $gameid, $adsnetwork_id, $country, $item['revenue']);
+							}
+						}*/
+					}
+
 					echo "<pre>";
-					print_r($arr_report_country);
-					echo "</pre>";*/
-					/*echo "<pre>";
-					print_r($arr_report_adsnetwork);
-					echo "</pre>";*/
-
-
-					/*foreach ($arr_report_adsnetwork as $adsnetwork => $item_adsnetwork) {
-						if (isset($arr_adsnetworks[$adsnetwork])) {
-							$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
-							echo "<pre>";
-							print_r([$adsnetwork_id, $adsnetwork, $item_adsnetwork['revenue']]);
-							echo "</pre>";
-
-						}
-					}*/
-
-
-					/*foreach ($arr_ironsource as $adsnetwork => $item_country) {
-						foreach ($item_country as $country => $item) {
-							$adsnetwork_id = $arr_adsnetworks[$adsnetwork];
-							$reportdata_obj->insertReportdata_revenue($ngay_hom_truoc, $gameid, $adsnetwork_id, $country, $item['revenue']);
-						}
-					}*/
+					print_r('-------------------------------------------');
+					echo "</pre>";
 				}
-
-				echo "<pre>";
-				print_r('-------------------------------------------');
-				echo "</pre>";
-			}
 			}
 		}
 	}

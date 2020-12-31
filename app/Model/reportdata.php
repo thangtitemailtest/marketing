@@ -43,6 +43,7 @@ class reportdata extends Model
 
 	public function insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install, $cpi = '')
 	{
+		$ngay_hom_qua = date('Y-m-d', strtotime($date . " -1 day"));
 		$checkReportdata = $this->checkReportdata($date, $gameid, $adsnetworkid, $countrycode);
 		if ($checkReportdata) {
 			$checkReportdata->updatedate = date('Y-m-d H:i:s');
@@ -53,8 +54,18 @@ class reportdata extends Model
 			$checkReportdata->ctr = $ctr;
 			$checkReportdata->cr = $cr;
 			$checkReportdata->install = $install;
-			if (!empty($cpi)) {
-				$checkReportdata->cpitarget = $cpi;
+			if ($adsnetworkid == 2) {
+				// adwords
+				if (empty($checkReportdata->cpitarget)) {
+					$checkReportdata_homqua = $this->checkReportdata($ngay_hom_qua, $gameid, $adsnetworkid, $countrycode);
+					if ($checkReportdata_homqua) {
+						$checkReportdata->cpitarget = $checkReportdata_homqua->cpitarget;
+					}
+				}
+			} else {
+				if (!empty($cpi)) {
+					$checkReportdata->cpitarget = $cpi;
+				}
 			}
 			$checkReportdata->save();
 		} else {
@@ -70,8 +81,16 @@ class reportdata extends Model
 			$reportdata_obj->ctr = $ctr;
 			$reportdata_obj->cr = $cr;
 			$reportdata_obj->install = $install;
-			if (!empty($cpi)) {
-				$reportdata_obj->cpitarget = $cpi;
+			if ($adsnetworkid == 2) {
+				// adwords
+				$checkReportdata_homqua = $this->checkReportdata($ngay_hom_qua, $gameid, $adsnetworkid, $countrycode);
+				if ($checkReportdata_homqua) {
+					$reportdata_obj->cpitarget = $checkReportdata_homqua->cpitarget;
+				}
+			} else {
+				if (!empty($cpi)) {
+					$reportdata_obj->cpitarget = $cpi;
+				}
 			}
 			$reportdata_obj->save();
 		}
@@ -147,9 +166,11 @@ class reportdata extends Model
 		return $reportdata;
 	}
 
-	public function getListAll()
+	public function getListAllWhereDate($datefrom, $dateto)
 	{
 		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid', 'gameid')
+			->where('date', '>=', $datefrom)
+			->where('date', '<=', $dateto)
 			->get();
 
 		return $reportdata;

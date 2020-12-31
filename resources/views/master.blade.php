@@ -114,6 +114,14 @@
             </li>
         @endif
 
+        @if(Auth::check() && $permission[0] == 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('get-settinggetrevenue')}}">
+                    <i class="fas fa-folder"></i>
+                    <span>Cài đặt lấy doanh thu</span></a>
+            </li>
+        @endif
+
         @if(in_array('edit',$permission) || $permission[0] == 'admin')
             <li class="nav-item">
                 <a class="nav-link" href="{{route('get-themdulieu')}}">

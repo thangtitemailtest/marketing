@@ -37,13 +37,15 @@
                                         onchange="changeAds()">
                                     <option value="0">--Chọn Adsnetwork--</option>
                                     <option value="ironsource">Ironsource</option>
+                                    <option value="applovin">AppLovin</option>
                                     <option value="adwords">GoogleAds</option>
                                     <option value="unity">Unity</option>
+                                    <option value="searchads">SeachAds</option>
                                 </select>
                             </div>
                         </div>
                         <div class="col-xs-9 col-md-9" id="thongbao" style="display: none">
-                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất 10p - 20p. Vui lòng đợi và
+                            <code>Dữ liệu đang được cập nhật. Quá trình cập nhật có thể mất vài phút. Vui lòng đợi và
                                 không
                                 tắt
                                 trang này.</code>
@@ -76,7 +78,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Cập nhật dữ liệu có thể mất 10p - 20p. Bạn có muốn cập nhật?
+                    Cập nhật dữ liệu có thể mất vài phút. Bạn có muốn cập nhật?
                 </div>
                 <div class="modal-footer">
                     <form action="{{ route('get-capnhatdulieu') }}" method="GET" id="filter-frm">

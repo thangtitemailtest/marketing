@@ -10,6 +10,7 @@ use App\Model\reportcountry;
 use App\Model\reportdata;
 use App\Model\reportgame;
 use App\Model\settingcountry;
+use App\Model\settinggetrevenue;
 use App\Model\timeupdatedata;
 use Illuminate\Http\Request;
 use DateTime;
@@ -53,6 +54,11 @@ class MarketingController extends Controller
 		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
 
+		/*AppLovin*/
+		$applovin_obj = new ApplovinController();
+		$applovin_obj->insertApplovin($arr_date);
+		/*EDN AppLovin*/
+
 		/*Adwords*/
 		$adwords_obj = new AdswordController();
 		$adwords_obj->insertAdwords($arr_date2);
@@ -62,6 +68,64 @@ class MarketingController extends Controller
 		$unity_obj = new UnityadsController();
 		$unity_obj->insertUnityads($arr_date2);
 		/*END Unity*/
+
+		/*SearchAds*/
+		$searchads_obj = new SearchAdsController();
+		$searchads_obj->insertSearchads($arr_date2);
+		/*END SearchAds*/
+
+		return 1;
+	}
+
+	public function getDataMarketingIronsource()
+	{
+		set_time_limit(3600);
+
+		$timeupdatedata_obj = new timeupdatedata();
+		$timeupdatedata_obj->insertTimeUpdate();
+
+		$datetoday = date('Y-m-d');
+		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
+		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
+		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
+
+		$arr_date = array();
+		$arr_date[] = $ngay_hom_truoc_kia;
+		$arr_date[] = $ngay_hom_truoc;
+		$arr_date[] = $ngay_hom_qua;
+
+		$arr_date2 = array();
+		$arr_date2[] = $ngay_hom_qua;
+
+		$game_obj = new game();
+		$games = $game_obj->getListGame();
+
+		$adsnetworks_obj = new adsnetworks();
+		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
+		$arr_adsnetworks = [];
+		foreach ($adsnetworks as $item) {
+			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
+		}
+
+		/*IronSource*/
+		$ironsource_obj = new IronsourceController();
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+		/*END IronSource*/
+
+		/*AppLovin*/
+		$applovin_obj = new ApplovinController();
+		$applovin_obj->insertApplovin($arr_date);
+		/*EDN AppLovin*/
+
+		/*Unity*/
+		$unity_obj = new UnityadsController();
+		$unity_obj->insertUnityads($arr_date2);
+		/*END Unity*/
+
+		/*SearchAds*/
+		$searchads_obj = new SearchAdsController();
+		$searchads_obj->insertSearchads($arr_date2);
+		/*END SearchAds*/
 
 		return 1;
 	}
@@ -93,6 +157,13 @@ class MarketingController extends Controller
 			/*END IronSource*/
 		}
 
+		if ($adsnetwork == 'applovin') {
+			/*AppLovin*/
+			$applovin_obj = new ApplovinController();
+			$applovin_obj->insertApplovin($arr_date);
+			/*EDN AppLovin*/
+		}
+
 		if ($adsnetwork == 'adwords') {
 			/*Adwords*/
 			$adwords_obj = new AdswordController();
@@ -105,6 +176,13 @@ class MarketingController extends Controller
 			$unity_obj = new UnityadsController();
 			$unity_obj->insertUnityads($arr_date);
 			/*END Unity*/
+		}
+
+		if ($adsnetwork == 'searchads') {
+			/*SearchAds*/
+			$searchads_obj = new SearchAdsController();
+			$searchads_obj->insertSearchads($arr_date);
+			/*END SearchAds*/
 		}
 
 		return 1;
@@ -361,12 +439,16 @@ class MarketingController extends Controller
 		return view('marketing.thongkedulieutheoquocgia', compact('adsnetwork', 'count_adsnetwork', 'country', 'game', 'permission'));
 	}
 
-	public function getThongkegame()
+	public function getThongkegame(Request $request)
 	{
+		$input = $request->all();
+		$date = $this->getDate($input);
+		$datefrom = $date['from'];
+		$dateto = $date['to'];
 		$game_obj = new game();
 		$game_arr = $game_obj->getListGameArrayGameid();
 		$reportdata_obj = new reportdata();
-		$reportdata = $reportdata_obj->getListAll();
+		$reportdata = $reportdata_obj->getListAllWhereDate($datefrom, $dateto);
 
 		$sum_install = 0;
 		$sum_cost = 0;
@@ -1197,6 +1279,72 @@ class MarketingController extends Controller
         </div>
 		<?php
 
+	}
+
+	public function getSettinggetrevenue()
+	{
+		$game_obj = new game();
+		$games = $game_obj->getListGame();
+
+		return view('marketing.settinggetrevenue', compact('games'));
+	}
+
+	public function getBangsettinggetrevenue(Request $request)
+	{
+		$input = $request->all();
+		$gameid = $input['gameid'];
+		$kenh = $input['kenh'];
+
+		$settinggetrevenue_obj = new settinggetrevenue();
+		$arr_setting = $settinggetrevenue_obj->getSettingWhereGameKenhToArr($gameid, $kenh);
+
+		if ($kenh == 'ironsource') {
+			$adsnetwork_obj = new adsnetworks();
+			$list_adsnetwork = $adsnetwork_obj->getListAdsGroup();
+
+			foreach ($list_adsnetwork as $item) {
+			    $adsnetworkid = $item->adsnetworkid;
+				?>
+                <div class="col-md-2">
+                    <label>
+						<?= $item->adsnetworkshow ?>
+                        <br><input type="checkbox"
+                                   name="checkbox[]" <?= isset($arr_setting[$adsnetworkid]) ? "checked" : "" ?>
+                                   value="<?= $adsnetworkid ?>">
+                    </label>
+                </div>
+				<?php
+			}
+		}
+
+		if ($kenh == 'applovin') {
+			?>
+            <div class="col-md-2">
+                <label>
+                    Applovin<br><input type="checkbox"
+                                       name="checkbox[]" <?= isset($arr_setting[5]) ? "checked" : "" ?>
+                                       value="5">
+                </label>
+            </div>
+			<?php
+		}
+	}
+
+	public function postSettinggetrevenue(Request $request)
+	{
+		$input = $request->all();
+		$gameid = $input['gameid'];
+		$kenh = $input['kenh'];
+		$checkbox = isset($input['checkbox']) ? $input['checkbox'] : [];
+
+		$settinggetrevenue_obj = new settinggetrevenue();
+		$settinggetrevenue_obj->deleteSetting($gameid, $kenh);
+
+		foreach ($checkbox as $adsnetworkid) {
+			$settinggetrevenue_obj->insertSetting($gameid, $kenh, $adsnetworkid);
+		}
+
+		return redirect()->back()->with('mess', 'Cài đặt thành công!');
 	}
 
 	public function rmcomma($str)

@@ -23,6 +23,10 @@ class AdswordController extends Controller
 
 		$reportdata = new reportdata();
 
+		$date = '2020-12-30';
+		//$reportdata->insertReportdata_adwords($date, 1004, 2, 'AR', '10482', '500,000 đ', '9.53', '84.44', '38');
+		exit;
+
 		$adsnetworkid = 2;
 
 		foreach ($arr_tk_adwords as $adwords) {

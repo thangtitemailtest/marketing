@@ -28,11 +28,11 @@
             float: right;
         }
 
-        #table_overall_length label{
+        #table_overall_length label {
             display: inline;
         }
 
-        #table_overall_length label select{
+        #table_overall_length label select {
             width: 100px;
         }
     </style>
@@ -302,13 +302,13 @@
         var todate = '{{isset($_GET['to-date']) ? $_GET['to-date'] : ''}}';
         clickOverall();
                 @else
-        var game = '';
-        var time = '';
-        var ngay = '';
-        var month = '';
-        var week = '';
-        var fromdate = '';
-        var todate = '';
+        var game = '{{$_GET['game']}}';
+        var time = '{{isset($_GET['time']) ? $_GET['time'] : ''}}';
+        var ngay = '{{isset($_GET['ngay']) ? $_GET['ngay'] : ''}}';
+        var month = '{{isset($_GET['month']) ? $_GET['month'] : ''}}';
+        var week = '{{isset($_GET['week']) ? $_GET['week'] : ''}}';
+        var fromdate = '{{isset($_GET['from-date']) ? $_GET['from-date'] : ''}}';
+        var todate = '{{isset($_GET['to-date']) ? $_GET['to-date'] : ''}}';
         ThongKeGame();
         @endif
         @endif
@@ -409,9 +409,9 @@
                         });
 
                         $('#table_overall').DataTable({
-                            "pageLength": 10,
+                            "pageLength": 30,
                             "bInfo": false,
-                            //"bLengthChange": false,
+                            "lengthMenu": [[30, 50, -1], [30, 50, "All"]]
                         });
 
                         showoverall = 1;
@@ -548,7 +548,14 @@
                 url: "{{route('get-thongkegame')}}",
                 //async: false,
                 dataType: "text",
-                data: {},
+                data: {
+                    ngay: ngay,
+                    month: month,
+                    time: time,
+                    week: week,
+                    fromdate: fromdate,
+                    todate: todate
+                },
                 type: "GET",
                 success: function (data) {
                     $('#divbang3').html(data);
@@ -560,31 +567,31 @@
 
         function clickXem() {
 
-            if ($('#game').val() != 0) {
-                /* makeAlertright("Vui lòng chọn Game", 2000);
-                 return;
-             }else {*/
+            //if ($('#game').val() != 0) {
+            /* makeAlertright("Vui lòng chọn Game", 2000);
+             return;
+         }else {*/
 
-                if ($('#time-1').is(':checked') === true && $('#week').val() == '') {
-                    makeAlertright('Vui lòng chọn Tuần.', 3000);
-                    return;
-                }
-
-                if ($('#time-0').is(':checked') === true && $('#ngay').val() == '') {
-                    makeAlertright('Vui lòng chọn Ngày.', 3000);
-                    return;
-                }
-
-                if ($('#time-2').is(':checked') === true && $('#month').val() == '') {
-                    makeAlertright('Vui lòng chọn Tháng.', 3000);
-                    return;
-                }
-
-                if ($('#time-3').is(':checked') === true && ($('#from-date').val() == '' || $('#to-date').val() == '')) {
-                    makeAlertright('Vui lòng chọn Từ ngày/Đến ngày.', 3000);
-                    return;
-                }
+            if ($('#time-1').is(':checked') === true && $('#week').val() == '') {
+                makeAlertright('Vui lòng chọn Tuần.', 3000);
+                return;
             }
+
+            if ($('#time-0').is(':checked') === true && $('#ngay').val() == '') {
+                makeAlertright('Vui lòng chọn Ngày.', 3000);
+                return;
+            }
+
+            if ($('#time-2').is(':checked') === true && $('#month').val() == '') {
+                makeAlertright('Vui lòng chọn Tháng.', 3000);
+                return;
+            }
+
+            if ($('#time-3').is(':checked') === true && ($('#from-date').val() == '' || $('#to-date').val() == '')) {
+                makeAlertright('Vui lòng chọn Từ ngày/Đến ngày.', 3000);
+                return;
+            }
+            //}
 
             /*if ($('#adsnetworkid').val() == 0) {
                 makeAlertright("Vui lòng chọn Adsnetwork", 2000);
