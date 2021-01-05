@@ -69,7 +69,10 @@ Route::middleware('Checklogout')->group(function () {
 
 /*Ads*/
 Route::get('/getdatamarketing', 'MarketingController@getDataMarketing')->name('get-datamarketing');
+Route::get('/getdatamarketingapplovin', 'MarketingController@getDataMarketingApplovin')->name('get-datamarketing2');
 Route::get('/getdatamarketingironsource', 'MarketingController@getDataMarketingIronsource')->name('get-datamarketingironsource');
+
+Route::get('/sendnotidung', 'MarketingController@getSendNotiDung')->name('get-sendnotidung');
 
 Route::get('/adsword', 'AdswordController@getAdsword')->name('get-asdwords');
 Route::get('/ironsource', 'IronsourceController@getIronsource')->name('get-ironsource');

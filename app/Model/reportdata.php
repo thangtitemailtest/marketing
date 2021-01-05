@@ -41,6 +41,37 @@ class reportdata extends Model
 		return 1;
 	}
 
+	public function insertReportdata_revenue_applovin($date = '', $gameid = '', $adsnetworkid = '', $countrycode = '', $revenue = 0)
+	{
+		$loggetrevenue = new loggetrevenue();
+		$checkLoggetrevenue = $loggetrevenue->getLogGetRevenue($date, $gameid, $adsnetworkid, $countrycode);
+		$checkReportdata = $this->checkReportdata($date, $gameid, $adsnetworkid, $countrycode);
+		if ($checkReportdata) {
+			if ($checkLoggetrevenue) {
+				$checkReportdata->revenue = round($revenue * config('tygia.revenue')) + $checkLoggetrevenue->revenue;
+			} else {
+				$checkReportdata->revenue = round($revenue * config('tygia.revenue'));
+			}
+
+			$checkReportdata->updatedate = date('Y-m-d H:i:s');
+			$checkReportdata->save();
+		} else {
+			$reportdata_obj = new reportdata();
+			$reportdata_obj->date = $date;
+			$reportdata_obj->gameid = $gameid;
+			$reportdata_obj->adsnetworkid = $adsnetworkid;
+			$reportdata_obj->countrycode = $countrycode;
+			if ($checkLoggetrevenue) {
+				$reportdata_obj->revenue = round($revenue * config('tygia.revenue')) + $checkLoggetrevenue->revenue;
+			} else {
+				$reportdata_obj->revenue = round($revenue * config('tygia.revenue'));
+			}
+			$reportdata_obj->save();
+		}
+
+		return 1;
+	}
+
 	public function insertReportdata_adwords($date, $gameid, $adsnetworkid, $countrycode, $cost, $budget, $ctr, $cr, $install, $cpi = '')
 	{
 		$ngay_hom_qua = date('Y-m-d', strtotime($date . " -1 day"));
@@ -216,6 +247,15 @@ class reportdata extends Model
 			->where('date', '<=', $dateto)
 			->where('gameid', '=', $gameid)
 			->where('countrycode', '=', $countrycode)
+			->get();
+
+		return $reportdata;
+	}
+
+	public function getListAllWhereOneDate($date)
+	{
+		$reportdata = $this::select('date', 'cost', 'revenue', 'install', 'countrycode', 'budget', 'cpitarget', 'ctr', 'cr', 'adsnetworkid', 'gameid')
+			->where('date', '=', $date)
 			->get();
 
 		return $reportdata;

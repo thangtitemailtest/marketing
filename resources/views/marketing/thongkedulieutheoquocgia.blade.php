@@ -215,6 +215,7 @@
                                                 <th>Country</th>
                                                 <th>Install</th>
                                                 <th>Cost</th>
+                                                <th>CPI</th>
                                                 <th>Revenue</th>
                                                 <th>Performance</th>
                                                 <th>Profit Rate</th>
@@ -395,11 +396,21 @@
                             if (performance > 0) {
                                 performance_hien = addcomma(performance);
                             }
+
+                            var cpi = 0;
+                            if (value["install"] > 0){
+                                cpi = value["cost"] / value["install"];
+                            }
+                            var cpi_hien = cpi;
+                            if (cpi > 0){
+                                cpi_hien = addcomma(Math.round(cpi));
+                            }
                             var $tr = $('<tr></tr>');
                             $tr.append('<td>' + dem + '</td>');
                             $tr.append('<td>' + value["name"] + '</td>');
                             $tr.append('<td>' + value["install"] + '</td>');
                             $tr.append('<td>' + cost_hien + '</td>');
+                            $tr.append('<td>' + cpi_hien + '</td>');
                             $tr.append('<td>' + revenue_hien + '</td>');
                             $tr.append('<td>' + performance_hien + '</td>');
                             $tr.append('<td>' + profit + ' %</td>');

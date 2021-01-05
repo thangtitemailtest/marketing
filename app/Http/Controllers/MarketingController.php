@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Model\adsnetworks;
 use App\Model\countries;
 use App\Model\game;
+use App\Model\loggetrevenue;
 use App\Model\reportadsnetwork;
 use App\Model\reportcountry;
 use App\Model\reportdata;
@@ -49,15 +50,13 @@ class MarketingController extends Controller
 			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
 		}
 
+		$loggetrevenue_obj = new loggetrevenue();
+		$loggetrevenue_obj->deleteDb();
+
 		/*IronSource*/
 		$ironsource_obj = new IronsourceController();
 		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
 		/*END IronSource*/
-
-		/*AppLovin*/
-		$applovin_obj = new ApplovinController();
-		$applovin_obj->insertApplovin($arr_date);
-		/*EDN AppLovin*/
 
 		/*Adwords*/
 		$adwords_obj = new AdswordController();
@@ -74,58 +73,10 @@ class MarketingController extends Controller
 		$searchads_obj->insertSearchads($arr_date2);
 		/*END SearchAds*/
 
-		return 1;
-	}
-
-	public function getDataMarketingIronsource()
-	{
-		set_time_limit(3600);
-
-		$timeupdatedata_obj = new timeupdatedata();
-		$timeupdatedata_obj->insertTimeUpdate();
-
-		$datetoday = date('Y-m-d');
-		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
-		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
-		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
-
-		$arr_date = array();
-		$arr_date[] = $ngay_hom_truoc_kia;
-		$arr_date[] = $ngay_hom_truoc;
-		$arr_date[] = $ngay_hom_qua;
-
-		$arr_date2 = array();
-		$arr_date2[] = $ngay_hom_qua;
-
-		$game_obj = new game();
-		$games = $game_obj->getListGame();
-
-		$adsnetworks_obj = new adsnetworks();
-		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
-		$arr_adsnetworks = [];
-		foreach ($adsnetworks as $item) {
-			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
-		}
-
-		/*IronSource*/
-		$ironsource_obj = new IronsourceController();
-		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
-		/*END IronSource*/
-
-		/*AppLovin*/
+        /*AppLovin*/
 		$applovin_obj = new ApplovinController();
 		$applovin_obj->insertApplovin($arr_date);
 		/*EDN AppLovin*/
-
-		/*Unity*/
-		$unity_obj = new UnityadsController();
-		$unity_obj->insertUnityads($arr_date2);
-		/*END Unity*/
-
-		/*SearchAds*/
-		$searchads_obj = new SearchAdsController();
-		$searchads_obj->insertSearchads($arr_date2);
-		/*END SearchAds*/
 
 		return 1;
 	}
@@ -151,6 +102,8 @@ class MarketingController extends Controller
 		}
 
 		if ($adsnetwork == 'ironsource') {
+			$loggetrevenue_obj = new loggetrevenue();
+			$loggetrevenue_obj->deleteDb();
 			/*IronSource*/
 			$ironsource_obj = new IronsourceController();
 			$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
@@ -803,6 +756,28 @@ class MarketingController extends Controller
 		$month = $input['month'];
 		$datefrom = date('Y-m-d', strtotime('first day of this month', strtotime($month)));
 		$dateto = date('Y-m-d', strtotime('last day of this month', strtotime($month)));
+
+		$ngaydauthang = $datefrom;
+		$ngaycuoithang = $dateto;
+		$nam = date('Y', strtotime($month));
+		$tuandau = date('W', strtotime($ngaydauthang));
+		$tuancuoi = date('W', strtotime($ngaycuoithang));
+		$tuannamtruoc = date('W', strtotime(($nam - 1) . '-12-31'));
+		$tuancuanam = date('W', strtotime($nam . '-12-31'));
+		if ($tuancuoi < $tuandau) {
+			$tuandau = $tuandau - $tuannamtruoc;
+		}
+
+
+		$dto = new DateTime();
+		$dto->setISODate($nam, $tuandau);
+		$datefrom = $dto->format('Y-m-d');
+
+		$dto = new DateTime();
+		$dto->setISODate($nam, $tuancuoi);
+		$dto->modify('+6 days');
+		$dateto = $dto->format('Y-m-d');
+
 		$reportdata_obj = new reportdata();
 		$reportdata_game = $reportdata_obj->getListWhereGameDate($gameid, $datefrom, $dateto);
 		$arr_sumall = [];
@@ -816,14 +791,9 @@ class MarketingController extends Controller
 			$arr_sumall[$date]['install'] += $item->install;
 		}
 
-		$ngaydauthang = $datefrom;
-		$ngaycuoithang = $dateto;
-		$nam = date('Y', strtotime($month));
-		$tuandau = date('W', strtotime($ngaydauthang));
-		$tuancuoi = date('W', strtotime($ngaycuoithang));
-
 		$arr_sum_tuan = [];
 		for ($tuan = $tuandau; $tuan <= $tuancuoi; $tuan++) {
+
 			$dto = new DateTime();
 			$dto->setISODate($nam, $tuan);
 			$datedau_form = $dto->format('Y-m-d');
@@ -859,8 +829,6 @@ class MarketingController extends Controller
 		$arr_thu[6] = 'Sat';
 		$arr_thu[7] = 'Sun';
 
-		?>
-		<?php
 		$demtuan = 0;
 		for ($tuan = $tuandau; $tuan <= $tuancuoi; $tuan++) {
 			$demtuan++;
@@ -920,7 +888,7 @@ class MarketingController extends Controller
 								$date = $i->format("Y-m-d");
 								$cltd = '';
 								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
-									$cost = '';
+									$cost = number_format($arr_sumall[$date]['cost']);
 									$cltd = 'cltr';
 								} elseif ($date > $datetoday) {
 									$cost = '';
@@ -943,7 +911,7 @@ class MarketingController extends Controller
 								$date = $i->format("Y-m-d");
 								$cltd = '';
 								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
-									$revenue = '';
+									$revenue = number_format($arr_sumall[$date]['revenue']);
 									$cltd = 'cltr';
 								} elseif ($date > $datetoday) {
 									$revenue = '';
@@ -966,7 +934,7 @@ class MarketingController extends Controller
 								$date = $i->format("Y-m-d");
 								$cltd = '';
 								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
-									$install = '';
+									$install = number_format($arr_sumall[$date]['install']);
 									$cltd = 'cltr';
 								} elseif ($date > $datetoday) {
 									$install = '';
@@ -989,7 +957,9 @@ class MarketingController extends Controller
 								$date = $i->format("Y-m-d");
 								$cltd = '';
 								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
-									$performance = '';
+									$cost = $arr_sumall[$date]['cost'];
+									$revenue = $arr_sumall[$date]['revenue'];
+									$performance = number_format($revenue - $cost);
 									$cltd = 'cltr';
 								} elseif ($date > $datetoday) {
 									$performance = '';
@@ -1014,7 +984,15 @@ class MarketingController extends Controller
 								$date = $i->format("Y-m-d");
 								$cltd = '';
 								if ($date < $ngaydauthang || $date > $ngaycuoithang) {
-									$profit = '';
+									$cost = $arr_sumall[$date]['cost'];
+									$revenue = $arr_sumall[$date]['revenue'];
+									$performance = $revenue - $cost;
+									if (empty($cost)) {
+										$profit = 0;
+									} else {
+										$profit = round($performance / $cost * 100, 2);
+									}
+									$profit .= ' %';
 									$cltd = 'cltr';
 								} elseif ($date > $datetoday) {
 									$profit = '';
@@ -1303,7 +1281,7 @@ class MarketingController extends Controller
 			$list_adsnetwork = $adsnetwork_obj->getListAdsGroup();
 
 			foreach ($list_adsnetwork as $item) {
-			    $adsnetworkid = $item->adsnetworkid;
+				$adsnetworkid = $item->adsnetworkid;
 				?>
                 <div class="col-md-2">
                     <label>
@@ -1318,15 +1296,22 @@ class MarketingController extends Controller
 		}
 
 		if ($kenh == 'applovin') {
-			?>
-            <div class="col-md-2">
-                <label>
-                    Applovin<br><input type="checkbox"
-                                       name="checkbox[]" <?= isset($arr_setting[5]) ? "checked" : "" ?>
-                                       value="5">
-                </label>
-            </div>
-			<?php
+			$adsnetwork_obj = new adsnetworks();
+			$list_adsnetwork = $adsnetwork_obj->getListAdsGroup();
+
+			foreach ($list_adsnetwork as $item) {
+				$adsnetworkid = $item->adsnetworkid;
+				?>
+                <div class="col-md-2">
+                    <label>
+						<?= $item->adsnetworkshow ?>
+                        <br><input type="checkbox"
+                                   name="checkbox[]" <?= isset($arr_setting[$adsnetworkid]) ? "checked" : "" ?>
+                                   value="<?= $adsnetworkid ?>">
+                    </label>
+                </div>
+				<?php
+			}
 		}
 	}
 
@@ -1345,6 +1330,76 @@ class MarketingController extends Controller
 		}
 
 		return redirect()->back()->with('mess', 'Cài đặt thành công!');
+	}
+
+	public function getSendNotiDung()
+	{
+		$datetoday = date('Y-m-d');
+		$date = date('Y-m-d', strtotime($datetoday . " -1 day"));
+
+		$game_obj = new game();
+		$arr_game = $game_obj->getListGameArrayGameid();
+
+		$reportdata_obj = new reportdata();
+		$reportdata = $reportdata_obj->getListAllWhereOneDate($date);
+		$data = [];
+		foreach ($reportdata as $item) {
+			$gameid = $item->gameid;
+			$cost = $item->cost;
+			$revenue = $item->revenue;
+			$install = $item->install;
+
+			if (empty($data[$gameid]['cost'])) $data[$gameid]['cost'] = 0;
+			if (empty($data[$gameid]['revenue'])) $data[$gameid]['revenue'] = 0;
+			if (empty($data[$gameid]['install'])) $data[$gameid]['install'] = 0;
+
+			$data[$gameid]['cost'] += $cost;
+			$data[$gameid]['revenue'] += $revenue;
+			$data[$gameid]['install'] += $install;
+		}
+
+		$body = '';
+		foreach ($data as $gameid => $item) {
+			$gamename = $arr_game[$gameid];
+			if ($gameid != 1009 && $gameid != 1010) {
+				$cost = $item['cost'];
+				$revenue = $item['revenue'];
+				$install = $item['install'];
+				$performance = $revenue - $cost;
+				$body .= "👉" . $gamename . ": " . number_format($install) . " / " . number_format($performance) . "   ";
+			}
+		}
+
+		$info = [
+			"priority" => "high",
+			"notification" => [
+				"title" => "Thông báo Marketting",
+				"body" => $body,
+				//"sound" => "default"
+			],
+			"to" => "eRnUt0Cu3EZ6pwXSxpdYbB:APA91bGT8alUNM7CAY9f1ZpyyFOWY_Q3tpyfd9IWJNptV7uW4iSE53L9qs-7mlOkveopoyIHmZMJabcLdYELPQJkECtXaW4p9U_DA4c-ErNxi4iU69a1p7SkYD0ETIa9WPKrOE_4aBU8"
+			//"to" => "eT3sljdx3kRnvjRezMoLLx:APA91bHApygiZ0MbuihFhg2taxAALDKEMOqFQhIt1_TqgbBLWuJ_jxTpEazc9MuLEbBoErsr-pnuYXLOnAMYU_V9LRWq4YvjKaqr24OAUyE3YYGBzgeqDyLf0eEMyvqf7AsWA2Bt8mx3"
+		];
+		$platform = 'IOS';
+		if ($platform == 'IOS' || $platform == 'ios') {
+			$serverkey = "AAAAGE0t6F0:APA91bFeOGyrCyCh172XGerOq-cdiVcoSd9wyq6eSBgFfwhqBTT_JQq2J5L8pmIIGdK49gnPFmpVPcBcFD5lPfpsstTRDMZ1jIEi7UHmWFkj8c3pzGVNJ9_FqhRKyCwLy9nQ853HauPc";
+		}
+		if ($platform == 'ANDROID' || $platform == 'android') {
+			$serverkey = "AAAAb_fccfs:APA91bFc08bhNsDslJE2NtBycHSDDNu385T98o6Zsoravxvtc2uguuQLYPDH2cMR2dlSKJ35CydtxMAUFQSo3TV4eqvvC6OJr0mu1eHGA7Rti-YXx9mjVtFev4Sc__Yxk1FlZOUR1C1Q";
+		}
+		$sendinfo = json_encode($info);
+		$ch = curl_init("https://fcm.googleapis.com/fcm/send");
+		$header = array('Content-Type: application/json',
+			"Authorization: key=" . $serverkey . "");
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $sendinfo);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($ch);
+		curl_close($ch);
+
+		return $result;
 	}
 
 	public function rmcomma($str)

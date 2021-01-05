@@ -29,6 +29,19 @@ class game extends Model
 		return $arr_game;
 	}
 
+	public function getListGameArrayBundleid()
+	{
+		$games = $this->getListGame();
+		$arr_game = [];
+		foreach ($games as $item) {
+			if (!empty($item->bundleid)) {
+				$arr_game[$item->bundleid] = $item->gameid;
+			}
+		}
+
+		return $arr_game;
+	}
+
 	public function getListGameArrayGameid()
 	{
 		$games = $this->getListGame();

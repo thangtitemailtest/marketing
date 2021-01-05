@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\adsnetworks;
 use App\Model\game;
+use App\Model\loggetrevenue;
 use App\Model\reportadsnetwork;
 use App\Model\reportcountry;
 use App\Model\reportdata;
@@ -84,7 +85,7 @@ class IronsourceController extends Controller
 						$file_name_error = str_replace("report", "report" . date('YmdHis'), $file_name);
 						$dir_error = getcwd() . "/adsironsource/errorfile/" . $file_name_error;
 						copy($dir, $dir_error);
-						$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai 0- ' . $data[7]);
+						$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'country sai 0');
 						return json_encode(array('status' => 0, 'message' => 'country sai'));
 					}
 				}
@@ -133,6 +134,8 @@ class IronsourceController extends Controller
 		$settinggetrevenue_obj = new settinggetrevenue();
 		$kenh = 'ironsource';
 
+		$loggetrevenue_obj = new loggetrevenue();
+
 		foreach ($arr_date as $date) {
 			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok vao');
 			foreach ($games as $item) {
@@ -152,6 +155,8 @@ class IronsourceController extends Controller
 								$settinggetrevenue = $settinggetrevenue_obj->getSettingWhereGameKenhToArr($gameid, $kenh);
 								if (isset($settinggetrevenue[$adsnetwork_id])){
 									$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
+
+									$loggetrevenue_obj->insertLogGetRevenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
 								}
 								/*if ($gameid == 1004) {
 									// Gun Clash 3D: Epic battle Android
