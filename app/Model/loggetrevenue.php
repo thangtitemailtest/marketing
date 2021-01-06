@@ -31,8 +31,8 @@ class loggetrevenue extends Model
 		return $loggetrevenue;
 	}
 
-	public function deleteDb()
+	public function deleteDb($date)
 	{
-		$this::query()->delete();
+		$this::where('date', '=', $date)->delete();
 	}
 }

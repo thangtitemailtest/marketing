@@ -137,6 +137,8 @@ class IronsourceController extends Controller
 		$loggetrevenue_obj = new loggetrevenue();
 
 		foreach ($arr_date as $date) {
+			$loggetrevenue_obj->deleteDb($date);
+
 			$timeupdatedata_obj->insertTimeUpdate($date, 'ironsource', 'ok vao');
 			foreach ($games as $item) {
 				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
@@ -153,7 +155,7 @@ class IronsourceController extends Controller
 							$adsnetwork_id = empty($arr_adsnetworks[$adsnetwork]) ? '' : $arr_adsnetworks[$adsnetwork];
 							foreach ($item_country as $country => $item_data) {
 								$settinggetrevenue = $settinggetrevenue_obj->getSettingWhereGameKenhToArr($gameid, $kenh);
-								if (isset($settinggetrevenue[$adsnetwork_id])){
+								if (isset($settinggetrevenue[$adsnetwork_id])) {
 									$reportdata_obj->insertReportdata_revenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);
 
 									$loggetrevenue_obj->insertLogGetRevenue($date, $gameid, $adsnetwork_id, $country, $item_data['revenue']);

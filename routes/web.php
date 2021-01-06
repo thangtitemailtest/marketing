@@ -72,6 +72,24 @@ Route::get('/getdatamarketing', 'MarketingController@getDataMarketing')->name('g
 Route::get('/getdatamarketingapplovin', 'MarketingController@getDataMarketingApplovin')->name('get-datamarketing2');
 Route::get('/getdatamarketingironsource', 'MarketingController@getDataMarketingIronsource')->name('get-datamarketingironsource');
 
+Route::get('/dataironsource1', 'MarketingController@getDataIronsource1');
+Route::get('/dataironsource2', 'MarketingController@getDataIronsource2');
+Route::get('/dataironsource3', 'MarketingController@getDataIronsource3');
+Route::get('/dataapplovin1', 'MarketingController@getDataApplovin1');
+Route::get('/dataapplovin2', 'MarketingController@getDataApplovin2');
+Route::get('/dataapplovin3', 'MarketingController@getDataApplovin3');
+Route::get('/dataunity', 'MarketingController@getDataUnity');
+Route::get('/datasearchads', 'MarketingController@getDataSearchads');
+Route::get('/dataadwords1', 'MarketingController@getDataAdwords1');
+Route::get('/dataadwords2', 'MarketingController@getDataAdwords2');
+Route::get('/dataadwords3', 'MarketingController@getDataAdwords3');
+Route::get('/dataadwords4', 'MarketingController@getDataAdwords4');
+Route::get('/dataadwords5', 'MarketingController@getDataAdwords5');
+Route::get('/dataadwords6', 'MarketingController@getDataAdwords6');
+Route::get('/dataadwords7', 'MarketingController@getDataAdwords7');
+Route::get('/dataadwords8', 'MarketingController@getDataAdwords8');
+
+
 Route::get('/sendnotidung', 'MarketingController@getSendNotiDung')->name('get-sendnotidung');
 
 Route::get('/adsword', 'AdswordController@getAdsword')->name('get-asdwords');

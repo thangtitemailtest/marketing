@@ -37,10 +37,10 @@
                                         onchange="changeAds()">
                                     <option value="0">--Chọn Adsnetwork--</option>
                                     <option value="ironsource">Ironsource</option>
-                                    <option value="applovin">AppLovin</option>
                                     <option value="adwords">GoogleAds</option>
                                     <option value="unity">Unity</option>
                                     <option value="searchads">SeachAds</option>
+                                    <option value="applovin">AppLovin</option>
                                 </select>
                             </div>
                         </div>
