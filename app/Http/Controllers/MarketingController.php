@@ -240,7 +240,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 1);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords2()
@@ -260,7 +260,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 2);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords3()
@@ -280,7 +280,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 3);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords4()
@@ -300,7 +300,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 4);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords5()
@@ -320,7 +320,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 5);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords6()
@@ -340,7 +340,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 6);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords7()
@@ -360,7 +360,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 7);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataAdwords8()
@@ -380,7 +380,7 @@ class MarketingController extends Controller
 		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 8);
 		/*END Adwords*/
 
-        return 1;
+		return 1;
 	}
 
 	public function getDataUnity()
@@ -1788,6 +1788,32 @@ class MarketingController extends Controller
 		curl_close($ch);
 
 		return $result;
+	}
+
+	public function getThemnuoc()
+	{
+		$country_obj = new countries();
+		$country = $country_obj->getListCountryAdd();
+		return view('marketing.themnuoc', compact('country'));
+	}
+
+	public function postThemnuoc(Request $request)
+	{
+		$input = $request->all();
+		$tennuoc = $input['tennuoc'];
+		$countrycode = strtoupper($input['countrycode']);
+		$country_obj = new countries();
+		$country_obj->insertCountry($tennuoc, $countrycode);
+
+		return redirect()->back()->with('mess', 'Thêm quốc gia thành công!');
+	}
+
+	public function getXoanuoc($id)
+	{
+		$country_obj = new countries();
+		$country_obj->deleteCountry($id);
+
+		return redirect()->back()->with('mess', 'Xoá quốc gia thành công!');
 	}
 
 	public function rmcomma($str)

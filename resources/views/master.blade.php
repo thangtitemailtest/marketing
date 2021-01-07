@@ -145,6 +145,14 @@
             </li>
         @endif
 
+        @if(in_array('edit',$permission) || $permission[0] == 'admin')
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('get-themnuoc')}}">
+                    <i class="fas fa-plus"></i>
+                    <span>Thêm quốc gia</span></a>
+            </li>
+        @endif
+
         <hr class="sidebar-divider d-none d-md-block">
 
     </ul>

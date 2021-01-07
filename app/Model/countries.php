@@ -52,4 +52,28 @@ class countries extends Model
 
 		return $country;
 	}
+
+	public function getListCountryAdd()
+	{
+		$country = $this::where('id', '>', 250)->get();
+
+		return $country;
+	}
+
+	public function insertCountry($tennuoc, $countrycode)
+	{
+		$country_obj = new countries();
+		$country_obj->name = $tennuoc;
+		$country_obj->code = $countrycode;
+		$country_obj->save();
+
+		return 1;
+	}
+
+	public function deleteCountry($id)
+	{
+		$this::where('id', '=', $id)->delete();
+
+		return 1;
+	}
 }

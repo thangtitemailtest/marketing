@@ -58,6 +58,10 @@ Route::middleware('Checklogout')->group(function () {
 	Route::post('/caidatnuoc-post', 'MarketingController@postCaidatnuoc')->name('post-caidatnuoc');
 	Route::get('/thongkedulieutheoquocgia', 'MarketingController@getThongkedulieutheoquocgia')->name('get-thongkedulieutheoquocgia');
 
+	Route::get('/themnuoc', 'MarketingController@getThemnuoc')->name('get-themnuoc');
+	Route::post('/themnuoc-post', 'MarketingController@postThemnuoc')->name('post-themnuoc');
+	Route::get('/xoanuoc/{id}', 'MarketingController@getXoanuoc')->name('get-xoanuoc');
+
 	Route::get('/getoverall', 'MarketingController@getOverall')->name('get-overall');
 	Route::get('/getoverallcountry', 'MarketingController@getOverallCountry')->name('get-overall-country');
 	Route::get('/getsummary', 'MarketingController@getSummary')->name('get-summary');
