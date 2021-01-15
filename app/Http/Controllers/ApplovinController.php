@@ -21,7 +21,7 @@ class ApplovinController extends Controller
 		$appkey = "ZL2HawAIwQJUSbKzAsprLkxcHQoqh44KEDwb7L3wHi4KyKT8R2RS6ZZt8nnU52TxC9kEraTJfOsl8TizTrwzxW";
 
 		$crl = curl_init();
-		$URL = "http://r.applovin.com/maxReport?api_key=" . $appkey . "&start=2021-01-01&end=2021-01-01&format=json&columns=day,application,package_name,platform,network,country,estimated_revenue";
+		$URL = "http://r.applovin.com/maxReport?api_key=" . $appkey . "&start=2021-01-12&end=2021-01-12&format=json&columns=day,application,package_name,platform,network,country,estimated_revenue";
 		curl_setopt($crl, CURLOPT_URL, $URL);
 		curl_setopt($crl, CURLOPT_RETURNTRANSFER, true);
 		$response = curl_exec($crl);
@@ -71,9 +71,9 @@ class ApplovinController extends Controller
 						if ($adsnetwork_id > 0) {
 							$settinggetrevenue = $settinggetrevenue_obj->getSettingWhereGameKenhToArr($gameid, $kenh);
 							if (isset($settinggetrevenue[$adsnetwork_id])) {
-								echo "<pre>";
+								/*echo "<pre>";
 								print_r([$appname, $packagename, $countrycode, $revenue, $platform, $adsnetwork_name, $adsnetwork_id]);
-								echo "</pre>";
+								echo "</pre>";*/
 
 								$sum_revenue += $revenue;
 							}

@@ -45,7 +45,8 @@
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
                                 <label class="radio-inline mr-3">Ngày</label>
-                                <input type="date" class="form-control" id="date" name="date" value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}"
+                                <input type="date" class="form-control" id="date" name="date"
+                                       value="{{date('Y-m-d', strtotime(date('Y-m-d') . " -1 day"))}}"
                                        onchange="changeAds()">
                             </div>
                         </div>
@@ -199,34 +200,35 @@
                 sumrevenuevnd += revenuevnd;
             });
 
-            if (sumcostusd == 0){
+            if (sumcostusd == 0) {
                 $('#sumcostusd').html(0);
-            } else{
+            } else {
                 sumcostusd = Math.round(sumcostusd * 100) / 100;
                 $('#sumcostusd').html(addcomma(sumcostusd));
             }
 
-            if (sumcostvnd == 0){
+            if (sumcostvnd == 0) {
                 $('#sumcostvnd').html(0);
-            } else{
+            } else {
                 $('#sumcostvnd').html(addcomma(sumcostvnd));
             }
 
-            if (sumrevenueusd == 0){
+            if (sumrevenueusd == 0) {
                 $('#sumrevenueusd').html(0);
-            } else{
+            } else {
                 sumrevenueusd = Math.round(sumrevenueusd * 100) / 100;
                 $('#sumrevenueusd').html(addcomma(sumrevenueusd));
             }
 
-            if (sumrevenuevnd == 0){
+            if (sumrevenuevnd == 0) {
                 $('#sumrevenuevnd').html(0);
-            } else{
+            } else {
                 $('#sumrevenuevnd').html(addcomma(sumrevenuevnd));
             }
         }
 
-        function changeCostUsd(code) {
+        function changeCostUsd(code, ele) {
+            xoadauphay(ele);
             var costusd = $('#costusd' + code).val();
             var costvnd = costusd * {{config('tygia.cost')}};
             if (costvnd == 0 || costvnd == '') {
@@ -255,7 +257,8 @@
             tinhsum();
         }
 
-        function changeRevenueUsd(code) {
+        function changeRevenueUsd(code, ele) {
+            xoadauphay(ele);
             var revenueusd = $('#revenueusd' + code).val();
             var revenuevnd = revenueusd * {{config('tygia.revenue')}};
             if (revenuevnd == 0 || revenuevnd == '') {
@@ -282,6 +285,12 @@
             addcomma1(ele);
 
             tinhsum();
+        }
+
+        function xoadauphay(ele) {
+            var val = $(ele).val();
+            val = val.replace(/,/g, ".");
+            $(ele).val(val);
         }
 
         function clickXacNhan() {

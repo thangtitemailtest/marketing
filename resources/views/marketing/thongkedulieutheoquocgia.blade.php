@@ -85,7 +85,7 @@
     <div class="container-fluid">
         <!-- Page Heading -->
         <div class="d-sm-flex align-items-center justify-content-between mb-4">
-            <h1 class="h3 mb-0 text-gray-800">Thống kê dữ liệu theo quốc gia</h1>
+            <h1 class="h3 mb-0 text-gray-800">Thống kê dữ liệu</h1>
         </div>
 
         <!-- Content Row -->
@@ -108,7 +108,7 @@
                         </div>
                         <div class="col-md-3" style="height: 80px;">
                             <div class="form-group input-group-sm">
-                                <label class="radio-inline mr-3">Adsnetowrk &nbsp; &nbsp; </label>
+                                <label class="radio-inline mr-3">Adsnetwork &nbsp; &nbsp; </label>
                                 <select name="adsnetworkid" id="adsnetworkid" class="form-control chosen-select">
                                     <option value="0">--Chọn Adsnetwork--</option>
                                     @foreach($adsnetwork as $item)
@@ -190,6 +190,10 @@
                                    href="#tabsummary"
                                    role="tab" onclick="clickSummary()"
                                    aria-selected="true">Summary</a>
+                                <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab"
+                                   href="#tabtongrevenuetheokenh"
+                                   role="tab" onclick="clickTongrevenuetheokenh()"
+                                   aria-selected="true">Tổng doanh thu theo Adsnetwork</a>
                                 @foreach($country as $item)
                                     <a class="nav-item nav-link" id="nav-home-tab" data-toggle="tab"
                                        href="#tab{{$item->code}}"
@@ -243,6 +247,16 @@
                                     <div id="divloadsummary" class="col-md-12"></div>
                                 </div>
                             </div>
+                            <div class="tab-pane fade" id="tabtongrevenuetheokenh" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-md-12 text-right" style="margin: 10px 0">
+                                        <button type="button" class="btn btn-primary btn-sm"
+                                                onclick="clickTongrevenuetheokenh('tailai')">Tải lại dữ liệu
+                                        </button>
+                                    </div>
+                                    <div id="divloadtongrevenuetheokenh" class="col-md-12"></div>
+                                </div>
+                            </div>
                             @foreach($country as $item)
                                 <div class="tab-pane fade" id="tab{{$item->code}}" role="tabpanel">
                                     <input type="hidden" name="showcountry{{$item->code}}"
@@ -289,6 +303,7 @@
         $('#accordionSidebar').hide();
         var showoverall = 0;
         var showsummary = 0;
+        var showtongrevenuetheokenh = 0;
 
         $('.chosen-select').chosen();
 
@@ -351,7 +366,10 @@
         }
 
         function clickOverall(check = '') {
-            if (showoverall == 0 || check == 'tailai') {
+            if (check == 'tailai'){
+                location.reload();
+            }
+            if (showoverall == 0) {
                 $('#divloadoverall').html("<div class='loader'></div>");
 
                 $.ajax({
@@ -398,11 +416,11 @@
                             }
 
                             var cpi = 0;
-                            if (value["install"] > 0){
+                            if (value["install"] > 0) {
                                 cpi = value["cost"] / value["install"];
                             }
                             var cpi_hien = cpi;
-                            if (cpi > 0){
+                            if (cpi > 0) {
                                 cpi_hien = addcomma(Math.round(cpi));
                             }
                             var $tr = $('<tr></tr>');
@@ -491,6 +509,35 @@
                         });
 
                         showsummary = 1;
+                    },
+                    error: function () {
+                    }
+                });
+            }
+        }
+
+        function clickTongrevenuetheokenh(check = '') {
+            if (showtongrevenuetheokenh == 0 || check == 'tailai') {
+                $('#divloadtongrevenuetheokenh').html("<div class='loader'></div>");
+
+                $.ajax({
+                    url: "{{route('get-tongrevenuetheokenh')}}",
+                    //async: false,
+                    dataType: "text",
+                    data: {
+                        month: month,
+                        game: game,
+                        time: time,
+                        week: week,
+                        fromdate: fromdate,
+                        todate: todate,
+                        ngay: ngay
+                    },
+                    type: "GET",
+                    success: function (data) {
+                        $('#divloadtongrevenuetheokenh').html(data);
+
+                        showtongrevenuetheokenh = 1;
                     },
                     error: function () {
                     }

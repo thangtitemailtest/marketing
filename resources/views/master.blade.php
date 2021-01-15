@@ -133,7 +133,7 @@
         <li class="nav-item">
             <a class="nav-link" href="{{route('get-thongkedulieutheoquocgia')}}">
                 <i class="fas fa-globe"></i>
-                <span>Thống kê dữ liệu theo<br>quốc gia</span></a>
+                <span>Thống kê dữ liệu</span></a>
         </li>
 
 

@@ -36,6 +36,7 @@ Route::middleware('Checklogin')->group(function () {
 	Route::get('/phanquyenuser/{id}', 'HomeController@getPhanquyenuser')->name('get-phanquyenuser');
 
 	Route::get('/capnhatdulieu', 'MarketingController@getCapnhatdulieu')->name('get-capnhatdulieu');
+	Route::get('/capnhatdulieu-submit', 'MarketingController@getCapnhatdulieuSubmit')->name('get-capnhatdulieu-submit');
 
 	Route::get('/settinggetrevenue', 'MarketingController@getSettinggetrevenue')->name('get-settinggetrevenue');
 	Route::post('/settinggetrevenuepost', 'MarketingController@postSettinggetrevenue')->name('post-settinggetrevenue');
@@ -65,6 +66,7 @@ Route::middleware('Checklogout')->group(function () {
 	Route::get('/getoverall', 'MarketingController@getOverall')->name('get-overall');
 	Route::get('/getoverallcountry', 'MarketingController@getOverallCountry')->name('get-overall-country');
 	Route::get('/getsummary', 'MarketingController@getSummary')->name('get-summary');
+	Route::get('/tongrevenuetheokenh', 'MarketingController@getTongrevenuetheokenh')->name('get-tongrevenuetheokenh');
 	Route::get('/summary-month', 'MarketingController@getSummarymonth')->name('get-summary-month');
 	Route::get('/getcountry', 'MarketingController@getCountry')->name('get-country');
 	Route::get('/thongkegame', 'MarketingController@getThongkegame')->name('get-thongkegame');
@@ -76,15 +78,18 @@ Route::get('/getdatamarketing', 'MarketingController@getDataMarketing')->name('g
 Route::get('/getdatamarketingapplovin', 'MarketingController@getDataMarketingApplovin')->name('get-datamarketing2');
 Route::get('/getdatamarketingironsource', 'MarketingController@getDataMarketingIronsource')->name('get-datamarketingironsource');
 
+Route::get('/dataironsource0', 'MarketingController@getDataIronsource0');
 Route::get('/dataironsource1', 'MarketingController@getDataIronsource1');
 Route::get('/dataironsource2', 'MarketingController@getDataIronsource2');
 Route::get('/dataironsource3', 'MarketingController@getDataIronsource3');
+Route::get('/dataapplovin0', 'MarketingController@getDataApplovin0');
 Route::get('/dataapplovin1', 'MarketingController@getDataApplovin1');
 Route::get('/dataapplovin2', 'MarketingController@getDataApplovin2');
 Route::get('/dataapplovin3', 'MarketingController@getDataApplovin3');
 Route::get('/dataunity', 'MarketingController@getDataUnity');
 Route::get('/datasearchads', 'MarketingController@getDataSearchads');
 Route::get('/dataadwords1', 'MarketingController@getDataAdwords1');
+Route::get('/dataadwords12', 'MarketingController@getDataAdwords12');
 Route::get('/dataadwords2', 'MarketingController@getDataAdwords2');
 Route::get('/dataadwords3', 'MarketingController@getDataAdwords3');
 Route::get('/dataadwords4', 'MarketingController@getDataAdwords4');
@@ -92,6 +97,7 @@ Route::get('/dataadwords5', 'MarketingController@getDataAdwords5');
 Route::get('/dataadwords6', 'MarketingController@getDataAdwords6');
 Route::get('/dataadwords7', 'MarketingController@getDataAdwords7');
 Route::get('/dataadwords8', 'MarketingController@getDataAdwords8');
+Route::get('/dataadwords9', 'MarketingController@getDataAdwords9');
 
 
 Route::get('/sendnotidung', 'MarketingController@getSendNotiDung')->name('get-sendnotidung');

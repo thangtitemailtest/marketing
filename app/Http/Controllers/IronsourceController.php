@@ -186,7 +186,7 @@ class IronsourceController extends Controller
 		$datetoday = date('Y-m-d');
 		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
 		$ngay_hom_truoc = date('Y-m-d', strtotime($datetoday . " -2 day"));
-		$date = '2020-12-26';
+		$date = '2021-01-12';
 
 		$adsnetworks_obj = new adsnetworks();
 		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
@@ -203,7 +203,7 @@ class IronsourceController extends Controller
 		$dem = 0;
 		foreach ($games as $item) {
 			$dem++;
-			if ($item->gameid == 1004) {
+			if ($item->gameid == 1001) {
 				if (isset($item->ironscource_appkey) && !empty($item->ironscource_appkey)) {
 					$gameid = $item->gameid;
 

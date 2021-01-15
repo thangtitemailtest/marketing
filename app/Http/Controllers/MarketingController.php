@@ -78,7 +78,7 @@ class MarketingController extends Controller
 		return 1;
 	}
 
-	public function getDataMarketingDate($date, $adsnetwork)
+	public function getDataMarketingDate($date, $adsnetwork, $taikhoandachon)
 	{
 		set_time_limit(3600);
 
@@ -114,8 +114,11 @@ class MarketingController extends Controller
 
 		if ($adsnetwork == 'adwords') {
 			/*Adwords*/
-			$adwords_obj = new AdswordController();
-			$adwords_obj->insertAdwords($arr_date);
+			if (!empty($taikhoandachon)) {
+				$arr_tk_adwords = [$taikhoandachon];
+				$adwords_obj = new AdswordController();
+				$adwords_obj->insertAdwords_theotk($arr_date, $arr_tk_adwords, $taikhoandachon);
+			}
 			/*END Adwords*/
 		}
 
@@ -136,12 +139,40 @@ class MarketingController extends Controller
 		return 1;
 	}
 
-	public function getDataIronsource1()
+	public function getDataIronsource0()
 	{
 		set_time_limit(3600);
 
 		$timeupdatedata_obj = new timeupdatedata();
 		$timeupdatedata_obj->insertTimeUpdate();
+
+		$datetoday = date('Y-m-d');
+		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -4 day"));
+
+		$arr_date = array();
+		$arr_date[] = $ngay_hom_truoc_kia;
+
+		$game_obj = new game();
+		$games = $game_obj->getListGame();
+
+		$adsnetworks_obj = new adsnetworks();
+		$adsnetworks = $adsnetworks_obj->getListAdsnetworks();
+		$arr_adsnetworks = [];
+		foreach ($adsnetworks as $item) {
+			$arr_adsnetworks[$item->adsnetworkname] = $item->adsnetworkid;
+		}
+
+		/*IronSource*/
+		$ironsource_obj = new IronsourceController();
+		$ironsource_obj->insertIronsource($arr_date, $games, $arr_adsnetworks);
+		/*END IronSource*/
+
+		return 1;
+	}
+
+	public function getDataIronsource1()
+	{
+		set_time_limit(3600);
 
 		$datetoday = date('Y-m-d');
 		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -3 day"));
@@ -237,7 +268,27 @@ class MarketingController extends Controller
 
 		/*Adwords*/
 		$adwords_obj = new AdswordController();
-		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 1);
+		$adwords_obj->insertAdwords_theotk_tach($arr_date2, $arr_tk_adwords, 11, 30, 0);
+		/*END Adwords*/
+
+		return 1;
+	}
+
+	public function getDataAdwords12()
+	{
+		set_time_limit(3600);
+
+		$datetoday = date('Y-m-d');
+		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
+
+		$arr_date2 = array();
+		$arr_date2[] = $ngay_hom_qua;
+
+		$arr_tk_adwords = ['256-247-7293'];
+
+		/*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords_theotk_tach($arr_date2, $arr_tk_adwords, 12, 100, 30);
 		/*END Adwords*/
 
 		return 1;
@@ -383,6 +434,26 @@ class MarketingController extends Controller
 		return 1;
 	}
 
+	public function getDataAdwords9()
+	{
+		set_time_limit(3600);
+
+		$datetoday = date('Y-m-d');
+		$ngay_hom_qua = date('Y-m-d', strtotime($datetoday . " -1 day"));
+
+		$arr_date2 = array();
+		$arr_date2[] = $ngay_hom_qua;
+
+		$arr_tk_adwords = ['510-000-4823'];
+
+		/*Adwords*/
+		$adwords_obj = new AdswordController();
+		$adwords_obj->insertAdwords_theotk($arr_date2, $arr_tk_adwords, 9);
+		/*END Adwords*/
+
+		return 1;
+	}
+
 	public function getDataUnity()
 	{
 		set_time_limit(3600);
@@ -415,6 +486,24 @@ class MarketingController extends Controller
 		$searchads_obj = new SearchAdsController();
 		$searchads_obj->insertSearchads($arr_date2);
 		/*END SearchAds*/
+
+		return 1;
+	}
+
+	public function getDataApplovin0()
+	{
+		set_time_limit(3600);
+
+		$datetoday = date('Y-m-d');
+		$ngay_hom_truoc_kia = date('Y-m-d', strtotime($datetoday . " -4 day"));
+
+		$arr_date = array();
+		$arr_date[] = $ngay_hom_truoc_kia;
+
+		/*AppLovin*/
+		$applovin_obj = new ApplovinController();
+		$applovin_obj->insertApplovin($arr_date);
+		/*EDN AppLovin*/
 
 		return 1;
 	}
@@ -475,14 +564,18 @@ class MarketingController extends Controller
 
 	public function getCapnhatdulieu(Request $request)
 	{
-		$input = $request->all();
-		if (isset($input['capnhatdulieu'])) {
-			$date = $input['date'];
-			$adsnetwork = $input['adsnetwork'];
-			$this->getDataMarketingDate($date, $adsnetwork);
-		}
-
 		return view('marketing.capnhatdulieu');
+	}
+
+	public function getCapnhatdulieuSubmit(Request $request)
+	{
+		$input = $request->all();
+		$date = $input['date'];
+		$adsnetwork = $input['adsnetwork'];
+		$taikhoandachon = $input['taikhoandachon'];
+		$this->getDataMarketingDate($date, $adsnetwork, $taikhoandachon);
+
+		return redirect()->back()->with('mess', 'Cập nhật dữ liệu thành công!');
 	}
 
 	public function getCaidatnuoc()
@@ -604,26 +697,29 @@ class MarketingController extends Controller
                         </td>
                         <td><input type="text" class="form-control clearinput" name="costusd<?= $item->code ?>"
                                    id="costusd<?= $item->code ?>"
-                                   onkeyup="changeCostUsd('<?= $item->code ?>')">
+                                   onkeyup="changeCostUsd('<?= $item->code ?>',this)">
                         </td>
                         <td><input type="text" class="form-control clearinput" name="costvnd<?= $item->code ?>"
                                    onkeyup="changeCostVnd(this,'<?= $item->code ?>')"
                                    id="costvnd<?= $item->code ?>">
                         </td>
                         <td><input type="text" class="form-control clearinput"
-                                   name="cpitarget<?= $item->code ?>" id="cpitarget<?= $item->code ?>">
+                                   name="cpitarget<?= $item->code ?>" id="cpitarget<?= $item->code ?>"
+                                   onkeyup="xoadauphay(this)">
                         </td>
                         <td><input type="text" class="form-control clearinput" name="ctr<?= $item->code ?>"
+                                   onkeyup="xoadauphay(this)"
                                    id="ctr<?= $item->code ?>">
                         </td>
                         <td><input type="text" class="form-control clearinput" name="cr<?= $item->code ?>"
+                                   onkeyup="xoadauphay(this)"
                                    id="cr<?= $item->code ?>"></td>
                         <td><input type="text" class="form-control clearinput" name="install<?= $item->code ?>"
-                                   id="install<?= $item->code ?>">
+                                   id="install<?= $item->code ?>" onkeyup="addcomma1(this)">
                         </td>
                         <td><input type="text" class="form-control clearinput"
                                    name="revenueusd<?= $item->code ?>" id="revenueusd<?= $item->code ?>"
-                                   onkeyup="changeRevenueUsd('<?= $item->code ?>')"></td>
+                                   onkeyup="changeRevenueUsd('<?= $item->code ?>',this)"></td>
                         <td><input type="text" class="form-control clearinput"
                                    onkeyup="changeRevenueVnd(this,'<?= $item->code ?>')"
                                    name="revenuevnd<?= $item->code ?>" id="revenuevnd<?= $item->code ?>">
@@ -694,7 +790,7 @@ class MarketingController extends Controller
 				$cpitarget = $input['cpitarget' . $countrycode];
 				$ctr = $input['ctr' . $countrycode];
 				$cr = $input['cr' . $countrycode];
-				$install = $input['install' . $countrycode];
+				$install = $this->rmcomma($input['install' . $countrycode]);
 				$reportdata_obj->insertReportdata_all_form($date, $gameid, $adsnetworkid, $countrycode, $revenue, $cost, $budget, $cpitarget, $ctr, $cr, $install);
 			}
 
@@ -1351,6 +1447,108 @@ class MarketingController extends Controller
             </div>
 			<?php
 		}
+	}
+
+	public function getTongrevenuetheokenh(Request $request)
+	{
+		$input = $request->all();
+		$date = $this->getDate($input);
+		$gameid = $input['game'];
+		$datefrom = $date['from'];
+		$dateto = $date['to'];
+
+		$reportdata_obj = new reportdata();
+		$reportdata_game = $reportdata_obj->getListWhereGameDate($gameid, $datefrom, $dateto);
+
+		$arrreport = [];
+		$arrreport_sum = [];
+		$arrreport_sum_date = [];
+		$sum = 0;
+		foreach ($reportdata_game as $item) {
+			$date = $item->date;
+			$adsnetworkid = $item->adsnetworkid;
+			$revenue = $item->revenue;
+
+			if (empty($arrreport[$date][$adsnetworkid])) $arrreport[$date][$adsnetworkid] = 0;
+			$arrreport[$date][$adsnetworkid] += $revenue;
+
+			if (empty($arrreport_sum[$adsnetworkid])) $arrreport_sum[$adsnetworkid] = 0;
+			$arrreport_sum[$adsnetworkid] += $revenue;
+
+			if (empty($arrreport_sum_date[$date])) $arrreport_sum_date[$date] = 0;
+			$arrreport_sum_date[$date] += $revenue;
+
+			$sum += $revenue;
+		}
+
+		$adsnetwork_obj = new adsnetworks();
+		$adsnetwork = $adsnetwork_obj->getListAdsGroup();
+
+		?>
+        <div class="row">
+            <div class="col-md-12 table-responsive">
+                <table class="table table-bordered table-hover" width="100%"
+                       cellspacing="0">
+                    <thead>
+                    <tr>
+                        <th colspan="<?= 2 + count($adsnetwork) ?>">Revenue</th>
+                    </tr>
+                    <tr>
+                        <th>Adsnetwork</th>
+                        <th>Sum</th>
+						<?php
+						foreach ($adsnetwork as $item) {
+							?>
+                            <th><?= $item->adsnetworkshow ?></th>
+							<?php
+						}
+						?>
+                    </tr>
+                    <tr>
+                        <th>Sum</th>
+                        <th><?= number_format($sum) ?></th>
+						<?php
+						foreach ($adsnetwork as $item) {
+							$adsnetworkid = $item->adsnetworkid;
+							$revenue = empty($arrreport_sum[$adsnetworkid]) ? 0 : $arrreport_sum[$adsnetworkid];
+							?>
+                            <th><?= number_format($revenue) ?></th>
+							<?php
+						}
+						?>
+                    </tr>
+                    </thead>
+                    <tbody>
+					<?php
+					$begin = new DateTime($datefrom);
+					$end = new DateTime($dateto);
+
+					for ($i = $begin; $i <= $end; $i->modify('+1 day')) {
+						$date = $i->format("Y-m-d");
+						$date_show = date('d/m/Y', strtotime($date));
+						$revenue_date = empty($arrreport_sum_date[$date]) ? 0 : $arrreport_sum_date[$date];
+						?>
+                        <tr>
+                            <td><?= $date_show ?></td>
+                            <th><?= number_format($revenue_date) ?></th>
+							<?php
+							foreach ($adsnetwork as $item) {
+								$adsnetworkid = $item->adsnetworkid;
+								$revenue = empty($arrreport[$date][$adsnetworkid]) ? 0 : $arrreport[$date][$adsnetworkid];
+								?>
+                                <td><?= number_format($revenue) ?></td>
+								<?php
+							}
+							?>
+                        </tr>
+						<?php
+					}
+					?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+		<?php
 	}
 
 	public function getCountry(Request $request)

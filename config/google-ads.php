@@ -75,6 +75,15 @@ return [
 		'refreshToken' => "1//0eaaiKr9PvU9tCgYIARAAGA4SNwF-L9Irsf5GyzUzTh-pI6rZfETmEUfnUuaRw34PM1--lcEvnBDxRN-XaLRWJuaMkTgt_RWy9g0"
 	],
 
+	'510-000-4823' => [
+		'developerToken' => "twRYeMqpeDSJQXJYFuBNAQ",
+		'clientCustomerId' => "510-000-4823",
+		'userAgent' => "playstarstudioglobal@gmail.com",
+		'clientId' => "1015179900122-il8sgguneof0ik9vm7r30kndp87rok0m.apps.googleusercontent.com",
+		'clientSecret' => "YrDw9iAowanFikZaQiAYR9Pc",
+		'refreshToken' => "1//0eaaiKr9PvU9tCgYIARAAGA4SNwF-L9Irsf5GyzUzTh-pI6rZfETmEUfnUuaRw34PM1--lcEvnBDxRN-XaLRWJuaMkTgt_RWy9g0"
+	],
+
 	'oAuth2' => [
 		'authorizationUri' => 'https://accounts.google.com/o/oauth2/v2/auth',
 		'redirectUri' => 'urn:ietf:wg:oauth:2.0:oob',

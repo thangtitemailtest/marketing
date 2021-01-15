@@ -260,4 +260,5 @@ class reportdata extends Model
 
 		return $reportdata;
 	}
+
 }
